@@ -759,30 +759,75 @@
 
 
     .mobile-detail-btn { display: none; }
+        /* PC用アコーディオンリセット（PCでは常時展開） */
+    .mobile-filter-accordion-toggle { display: none; }
+    /* PC default */
+    @media (min-width: 769px) { .mobile-filter-collapsible { display: block !important; } }
+    .mobile-row-toggle-arrow { display: none; }
+    
     /* --- スマホアプリ (PWA) 最適化スタイル --- */
     @media (max-width: 768px) {
       body {
-        padding-top: 52px !important;
-        padding-bottom: 76px !important; /* ボトムバーの重なり防止 */
-        background: #f1f5f9 !important;
+        padding-top: 50px !important;
+        padding-bottom: 70px !important;
+        background: #f8fafc !important;
         -webkit-tap-highlight-color: transparent;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
       }
-      /* スマホでは青い巨大ヒーローバナーは非表示にして画面を最大活用 */
+      
+      /* ヘッダーの青い27個のボタングループはスマホでは絶対非表示 */
+      .nav-links {
+        display: none !important;
+      }
+      .nav-bar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 48px !important;
+        background: #ffffff !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+        z-index: 1200 !important;
+        display: flex !important;
+        align-items: center !important;
+        padding: 0 10px !important;
+      }
+      .nav-inner {
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+      }
+      .nav-title {
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        color: #1e40af !important;
+      }
+
+      /* スマホでは青い巨大ヒーローバナーは非表示 */
       header.header {
         display: none !important;
       }
 
-      /* コンテナをFlexboxにして、スマホ時のみ順序を入れ替え：
-         ① 検索パネル ➔ ② 件数・ページ ➔ ③ 検索結果カード ➔ ④ ナレッジまとめハブ */
+      /* コンテナレイアウト順序：①検索バー ➔ ②薬一覧（最優先） ➔ ③ナレッジハブ */
       .container {
         display: flex !important;
         flex-direction: column !important;
-        padding: 8px 10px !important;
+        padding: 6px 8px !important;
         max-width: 100% !important;
+        gap: 6px !important;
       }
       .search-panel {
         order: 1 !important;
+        background: #ffffff !important;
+        border-radius: 10px !important;
+        padding: 8px 10px !important;
+        margin: 0 !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+        border: 1px solid #e2e8f0 !important;
       }
       .table-card {
         order: 2 !important;
@@ -790,41 +835,20 @@
         border: none !important;
         box-shadow: none !important;
         padding: 0 !important;
-        margin-bottom: 12px !important;
-      }
-      .table-header-info {
-        display: flex !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        padding: 4px 4px !important;
-        margin-bottom: 6px !important;
-      }
-      .table-container {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        overflow: visible !important;
+        margin: 0 !important;
       }
       .knowledge-hub-panel {
         order: 3 !important;
         background: #ffffff !important;
-        border: 1.5px solid #d8b4fe !important;
-        border-radius: 12px !important;
-        margin-top: 14px !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 10px !important;
+        margin-top: 10px !important;
         margin-bottom: 20px !important;
         overflow: hidden !important;
-        box-shadow: 0 1px 4px rgba(168, 85, 247, 0.1) !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
       }
 
-      /* 🔍 検索パネル：コンパクトで清潔感あるヒーローバー */
-      .search-panel {
-        background: #ffffff !important;
-        border-radius: 14px !important;
-        padding: 10px 12px !important;
-        margin-bottom: 8px !important;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important;
-        border: 1px solid #e2e8f0 !important;
-      }
+      /* 検索バー周り */
       .search-row {
         display: flex !important;
         flex-direction: column !important;
@@ -835,11 +859,11 @@
         position: relative !important;
       }
       #searchInput {
-        font-size: 16px !important; /* iOSでズームしない最適フォントサイズ */
-        height: 44px !important;
-        border-radius: 22px !important;
+        font-size: 15px !important;
+        height: 40px !important;
+        border-radius: 20px !important;
         border: 1.5px solid #cbd5e1 !important;
-        padding: 0 14px 0 38px !important;
+        padding: 0 12px 0 36px !important;
         width: 100% !important;
         box-sizing: border-box !important;
         background: #f8fafc !important;
@@ -849,447 +873,459 @@
       #searchInput:focus {
         background: #ffffff !important;
         border-color: #0284c7 !important;
-        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
       }
       .search-icon {
         position: absolute !important;
-        left: 13px !important;
+        left: 12px !important;
         top: 50% !important;
         transform: translateY(-50%) !important;
-        font-size: 16px !important;
-      }
-      #searchTarget {
-        width: 100% !important;
-        height: 38px !important;
-        font-size: 12.5px !important;
-        font-weight: 600 !important;
-        border-radius: 8px !important;
-        border: 1px solid #cbd5e1 !important;
-        background: #f8fafc !important;
-        color: #334155 !important;
-        padding: 0 8px !important;
+        font-size: 15px !important;
       }
 
-      /* 🚀 フィルター＆クイックタグ：指で横にサッとスワイプできる1行チップスバー */
-      .filters-row {
+      /* 絞り込みアコーディオン */
+      .mobile-filter-accordion-toggle {
         display: flex !important;
-        overflow-x: auto !important;
-        white-space: nowrap !important;
-        -webkit-overflow-scrolling: touch !important;
-        padding: 6px 0 2px 0 !important;
-        gap: 6px !important;
-        margin: 0 !important;
-        border-top: 1px solid #f1f5f9 !important;
-      }
-      .filters-row::-webkit-scrollbar {
-        display: none !important;
-      }
-      .filter-label {
-        display: none !important;
-      }
-      .btn-fav-filter, .btn-ins-filter {
-        flex-shrink: 0 !important;
-        height: 32px !important;
-        padding: 0 10px !important;
-        font-size: 11.5px !important;
-        font-weight: 600 !important;
-        border-radius: 16px !important;
-        border: 1px solid #cbd5e1 !important;
-        background: #ffffff !important;
-        color: #334155 !important;
-        display: inline-flex !important;
+        justify-content: space-between !important;
         align-items: center !important;
-        gap: 4px !important;
-      }
-      .btn-fav-filter.active {
-        background: #fef08a !important;
-        border-color: #eab308 !important;
-        color: #854d0e !important;
-      }
-      .btn-ins-filter.active {
-        background: #fee2e2 !important;
-        border-color: #ef4444 !important;
-        color: #991b1b !important;
-      }
-      .filter-select {
-        flex-shrink: 0 !important;
-        height: 32px !important;
-        padding: 0 8px !important;
-        font-size: 11.5px !important;
+        width: 100% !important;
+        height: 28px !important;
+        padding: 0 10px !important;
+        font-size: 11px !important;
         font-weight: 600 !important;
-        border-radius: 16px !important;
-        border: 1px solid #cbd5e1 !important;
-        background: #ffffff !important;
-        color: #334155 !important;
+        color: #475569 !important;
+        background: #f1f5f9 !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 6px !important;
+        cursor: pointer !important;
+      }
+      .mobile-filter-collapsible {
+        display: none !important; /* スマホ初期状態は閉じる */
+        padding-top: 8px !important;
+        border-top: 1px dashed #e2e8f0 !important;
+        margin-top: 6px !important;
+      }
+      .mobile-filter-collapsible.open {
+        display: block !important; /* 展開時 */
+      }
+
+      /* フィルター内部要素 */
+      .search-target-select {
+        width: 100% !important;
+        font-size: 12px !important;
+        height: 32px !important;
+      }
+      .filters-row {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px !important;
+        margin-top: 6px !important;
+      }
+      .filter-group select {
+        width: 100% !important;
+        font-size: 11.5px !important;
+        height: 30px !important;
       }
       .quick-tags {
         display: flex !important;
-        gap: 6px !important;
-        flex-shrink: 0 !important;
-      }
-      .quick-tags span {
-        display: none !important;
+        flex-wrap: wrap !important;
+        gap: 4px !important;
+        margin-top: 6px !important;
       }
       .quick-btn {
-        flex-shrink: 0 !important;
-        height: 32px !important;
-        padding: 0 10px !important;
-        font-size: 11.5px !important;
-        font-weight: 600 !important;
-        border-radius: 16px !important;
-        border: 1px solid #e2e8f0 !important;
-        background: #f1f5f9 !important;
-        color: #475569 !important;
-        cursor: pointer !important;
+        font-size: 10.5px !important;
+        padding: 4px 8px !important;
+        border-radius: 4px !important;
       }
 
-      /* 件数表示 */
-      .hit-count {
-        font-size: 13px !important;
+      /* テーブル上部情報バー */
+      .table-header-info {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 2px 4px !important;
+        font-size: 12px !important;
+      }
+      .table-header-info .result-count {
+        font-size: 12.5px !important;
         font-weight: 700 !important;
-        color: #0f172a !important;
       }
       .pagination {
-        display: flex !important;
-        align-items: center !important;
-        gap: 6px !important;
+        font-size: 11px !important;
+        gap: 3px !important;
       }
-      .page-btn {
-        padding: 5px 10px !important;
-        font-size: 11.5px !important;
-        border-radius: 6px !important;
+      .pagination button {
+        padding: 3px 8px !important;
+        font-size: 11px !important;
       }
 
-      /* 💊 医薬品カード（Medicine Card View）：極限の視認性と操作性 */
-      table {
+      /* 💊 医薬品テーブルの超高密度カード化 */
+      .table-container {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        overflow: visible !important;
+      }
+      table.data-table {
         display: block !important;
         width: 100% !important;
+        background: transparent !important;
         border: none !important;
       }
-      thead {
-        display: none !important;
+      table.data-table thead {
+        display: none !important; /* PC用ヘッダー行を非表示 */
       }
-      tbody {
+      table.data-table tbody {
         display: flex !important;
         flex-direction: column !important;
-        gap: 10px !important;
+        gap: 6px !important;
         width: 100% !important;
       }
-      tbody tr {
+
+      /* 各薬品行（カード） */
+      tbody tr.drug-table-row {
         display: block !important;
         background: #ffffff !important;
         border: 1px solid #e2e8f0 !important;
-        border-left: 4px solid #0284c7 !important;
-        border-radius: 12px !important;
-        padding: 14px !important;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important;
-        position: relative !important;
-        box-sizing: border-box !important;
-        width: 100% !important;
-      }
-      tbody tr:active {
-        background: #f8fafc !important;
-      }
-      /* ID表示 */
-      tbody tr td:nth-child(1) {
-        position: absolute !important;
-        top: 14px !important;
-        right: 46px !important;
-        font-size: 11px !important;
-        color: #94a3b8 !important;
-        padding: 0 !important;
-        border: none !important;
-      }
-      /* お気に入りボタン */
-      tbody tr td:nth-child(2) {
-        position: absolute !important;
-        top: 10px !important;
-        right: 10px !important;
-        padding: 0 !important;
-        border: none !important;
-      }
-      .fav-btn {
-        font-size: 20px !important;
-        padding: 4px !important;
-        background: none !important;
-        border: none !important;
+        border-radius: 8px !important;
+        padding: 8px 10px !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
         cursor: pointer !important;
+        transition: background 0.15s ease, border-color 0.15s ease !important;
       }
-      /* 医薬品名 ＆ メーカー */
-      tbody tr td:nth-child(3) {
+      tbody tr.drug-table-row:active {
+        background: #f1f5f9 !important;
+      }
+      tbody tr.drug-table-row.expanded {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 2px 6px rgba(59,130,246,0.12) !important;
+        background: #fafcfe !important;
+      }
+
+      /* カード内の各行レイアウト */
+      tbody tr.drug-table-row td {
         display: block !important;
-        padding: 0 44px 0 0 !important;
+        padding: 0 !important;
         border: none !important;
+      }
+      /* ID列・お気に入り列は1行目に統合して表示 */
+      tbody tr.drug-table-row td:first-child {
+        display: none !important; /* ID単独セルは非表示 */
+      }
+      tbody tr.drug-table-row td:nth-child(2) {
+        display: none !important; /* お気に入り単独セルは非表示（薬名行内に配置） */
+      }
+
+      /* 薬名 ＆ メーカー ＆ 規格バッジ行 */
+      .drug-name-header-row {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 6px !important;
+        width: 100% !important;
       }
       .drug-name-btn {
-        font-size: 16.5px !important;
+        font-size: 14.5px !important;
         font-weight: 700 !important;
-        color: #0f172a !important;
+        color: #1d4ed8 !important;
         text-align: left !important;
-        line-height: 1.35 !important;
         padding: 0 !important;
-        background: none !important;
         border: none !important;
+        background: transparent !important;
         cursor: pointer !important;
-        letter-spacing: -0.2px !important;
+        line-height: 1.3 !important;
+        flex: 1 !important;
       }
       .maker-text {
-        font-size: 11.5px !important;
-        color: #64748b !important;
-        margin-top: 3px !important;
-      }
-      /* 一般名 */
-      tbody tr td:nth-child(4) {
-        display: block !important;
-        padding: 5px 0 0 0 !important;
-        font-size: 13px !important;
-        font-weight: 600 !important;
-        color: #0369a1 !important;
-        border: none !important;
-      }
-      tbody tr td:nth-child(4)::before {
-        content: "一般名: ";
-        font-size: 11px;
-        font-weight: normal;
-        color: #64748b;
-      }
-      /* 薬効分類 */
-      tbody tr td:nth-child(5) {
-        display: block !important;
-        padding: 2px 0 0 0 !important;
-        font-size: 11.5px !important;
-        color: #475569 !important;
-        border: none !important;
-      }
-      tbody tr td:nth-child(5)::before {
-        content: "薬効: ";
-        font-size: 11px;
-        color: #94a3b8;
-      }
-      /* 剤形・先後バッジ */
-      tbody tr td:nth-child(6) {
-        display: flex !important;
-        gap: 6px !important;
-        padding: 6px 0 !important;
-        border: none !important;
-      }
-      .badge {
         font-size: 11px !important;
-        padding: 3px 8px !important;
-        border-radius: 4px !important;
-        font-weight: 600 !important;
-      }
-      .badge-route-oral { background: #dcfce7 !important; color: #15803d !important; }
-      .badge-route-ext { background: #e0f2fe !important; color: #0369a1 !important; }
-      .badge-route-inj { background: #fce7f3 !important; color: #be185d !important; }
-      .badge-origin { background: #ffedd5 !important; color: #c2410c !important; }
-      .badge-generic { background: #eff6ff !important; color: #1d4ed8 !important; }
-
-      /* 添付文書抜粋プレビュー */
-      tbody tr td:nth-child(7) {
-        display: block !important;
-        padding: 8px 0 !important;
-        border-top: 1px dashed #e2e8f0 !important;
-        margin-top: 6px !important;
-        font-size: 12px !important;
-        color: #475569 !important;
-        line-height: 1.5 !important;
-      }
-      .match-preview {
-        background: #f8fafc !important;
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 6px !important;
-        padding: 8px 10px !important;
-        cursor: pointer !important;
-      }
-
-      /* アクションボタングループ（詳細 ＆ 原本） */
-      tbody tr td:nth-child(8) {
+        color: #64748b !important;
+        margin-top: 2px !important;
         display: flex !important;
         align-items: center !important;
-        gap: 8px !important;
-        padding: 8px 0 0 0 !important;
-        border: none !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
+        gap: 6px !important;
+        flex-wrap: wrap !important;
       }
-      .mobile-detail-btn {
+      .mobile-row-toggle-arrow {
         display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 22px !important;
+        height: 22px !important;
+        border-radius: 50% !important;
+        background: #f1f5f9 !important;
+        color: #64748b !important;
+        font-size: 12px !important;
+        font-weight: bold !important;
+        flex-shrink: 0 !important;
+        transition: transform 0.2s ease !important;
+      }
+      tbody tr.drug-table-row.expanded .mobile-row-toggle-arrow {
+        transform: rotate(180deg) !important;
+        background: #dbeafe !important;
+        color: #2563eb !important;
+      }
+
+      /* 規格・区分バッジ */
+      tbody tr.drug-table-row td:nth-child(4),
+      tbody tr.drug-table-row td:nth-child(5),
+      tbody tr.drug-table-row td:nth-child(6) {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        font-size: 10.5px !important;
+        margin-top: 3px !important;
+      }
+
+      /* 🔍 折りたたみ展開部分（効能プレビュー ＆ ボタン） */
+      tbody tr.drug-table-row td.preview-cell {
+        display: none !important; /* 初期折りたたみ */
+        margin-top: 8px !important;
+        padding-top: 8px !important;
+        border-top: 1px dashed #e2e8f0 !important;
+        font-size: 12px !important;
+        line-height: 1.45 !important;
+        color: #334155 !important;
+        background: #f8fafc !important;
+        border-radius: 6px !important;
+        padding: 8px !important;
+      }
+      tbody tr.drug-table-row.expanded td.preview-cell {
+        display: block !important; /* タップ時展開 */
+      }
+
+      tbody tr.drug-table-row td.action-cell {
+        display: none !important; /* 初期折りたたみ */
+        margin-top: 8px !important;
+        padding-top: 6px !important;
+        display: none;
+        gap: 8px !important;
+      }
+      tbody tr.drug-table-row.expanded td.action-cell {
+        display: flex !important; /* タップ時展開 */
+      }
+
+      .mobile-detail-btn {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 2 !important;
+        height: 38px !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        color: #ffffff !important;
+        background: #2563eb !important;
+        border: none !important;
+        border-radius: 6px !important;
+        cursor: pointer !important;
+        box-shadow: 0 1px 3px rgba(37,99,235,0.2) !important;
+      }
+      .mobile-detail-btn:active {
+        background: #1d4ed8 !important;
+      }
+      .pdf-link-btn {
+        display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         flex: 1 !important;
-        height: 40px !important;
-        padding: 0 12px !important;
-        font-size: 13px !important;
-        font-weight: 700 !important;
-        border-radius: 8px !important;
-        background: #0284c7 !important;
-        color: #ffffff !important;
-        border: none !important;
-        cursor: pointer !important;
-        white-space: nowrap !important;
-        box-shadow: 0 1px 3px rgba(2, 132, 199, 0.25) !important;
-      }
-      .mobile-detail-btn:active {
-        background: #0369a1 !important;
-      }
-      .pdf-link-btn {
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        width: 90px !important;
-        height: 40px !important;
-        padding: 0 8px !important;
+        height: 38px !important;
         font-size: 12.5px !important;
         font-weight: 600 !important;
-        border-radius: 8px !important;
-        background: #f1f5f9 !important;
-        color: #334155 !important;
-        border: 1px solid #cbd5e1 !important;
+        color: #dc2626 !important;
+        background: #fee2e2 !important;
+        border: 1px solid #fca5a5 !important;
+        border-radius: 6px !important;
         text-decoration: none !important;
-        white-space: nowrap !important;
         box-sizing: border-box !important;
       }
-      .pdf-link-btn:active {
-        background: #e2e8f0 !important;
-      }
 
-      /* ナレッジまとめハブ */
+      /* ナレッジハブのアコーディオン */
       .knowledge-hub-header {
-        padding: 12px 14px !important;
-        background: #faf5ff !important;
-        cursor: pointer !important;
+        padding: 10px 12px !important;
+        font-size: 12px !important;
       }
       .knowledge-hub-title {
         font-size: 13px !important;
-        font-weight: 700 !important;
-        color: #7e22ce !important;
       }
       .knowledge-hub-badge {
         display: none !important;
       }
-      .knowledge-hub-body {
-        padding: 12px !important;
-      }
-
-      /* 詳細モーダルのスマホ全画面最適化 */
-      .modal-backdrop {
-        padding: 0 !important;
-        z-index: 9500 !important;
-      }
-      .modal-dialog {
-        width: 100vw !important;
-        height: 100vh !important;
-        max-width: 100vw !important;
-        max-height: 100vh !important;
-        border-radius: 0 !important;
-        margin: 0 !important;
-      }
-      .modal-header {
-        padding: 12px 14px !important;
-        flex-shrink: 0 !important;
-      }
-      .modal-title-wrap h2 {
-        font-size: 15px !important;
-      }
-      .modal-meta {
-        font-size: 11px !important;
-        flex-direction: column !important;
-        gap: 2px !important;
-      }
-      .modal-body {
-        flex-direction: column !important;
-        overflow-y: auto !important;
-        flex: 1 !important;
-      }
-      .modal-sidebar {
-        width: 100% !important;
-        border-right: none !important;
-        border-bottom: 1px solid var(--border) !important;
-        padding: 10px 12px !important;
-        max-height: 130px !important;
-        overflow-y: auto !important;
-        flex-shrink: 0 !important;
-        background: #f8fafc !important;
-      }
-      .sidebar-notice {
-        display: none !important;
-      }
-      .modal-tabs {
-        margin-bottom: 8px !important;
-      }
-      .modal-main {
-        width: 100% !important;
-        flex: 1 !important;
-        overflow-y: auto !important;
-        padding: 12px !important;
-      }
-      .modal-search-bar {
-        padding: 8px 10px !important;
-        gap: 6px !important;
-      }
-      .modal-search-input {
-        font-size: 14px !important;
-        height: 36px !important;
-      }
-      .sec-card {
-        padding: 14px !important;
-        margin-bottom: 12px !important;
-        border-radius: 10px !important;
-      }
-      .sec-title {
-        font-size: 14px !important;
-      }
-      .sec-content {
-        font-size: 13.5px !important;
-        line-height: 1.6 !important;
-      }
     }
 
-    /* --- スマホ専用ボトム固定ナビ --- */
-    .mobile-bottom-nav {
-      display: none;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      background: #0f172a;
-      border-top: 1px solid #334155;
-      z-index: 2000;
-      justify-content: space-around;
-      align-items: center;
-      padding-bottom: env(safe-area-inset-bottom, 0px);
-    }
-    .b-nav-item {
-      background: none;
-      border: none;
-      color: #94a3b8;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      font-size: 10px;
-      cursor: pointer;
-      padding: 6px 12px;
-      transition: color 0.2s;
-    }
-    .b-nav-item.active, .b-nav-item:hover {
-      color: #38bdf8;
-    }
-    .b-nav-icon {
-      font-size: 18px;
-    }
-    @media (max-width: 768px) {
-      .mobile-bottom-nav {
-        display: flex;
-      }
-      body {
-        padding-bottom: 70px; /* ボトムバーの重なり防止 */
-      }
-    }
 
-  </style>
+  /* --- 展開式スマートヘッダー ＆ ドロワーメニュー --- */
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    height: 48px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+  }
+  .nav-inner {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .nav-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e3a8a;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tool-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #ffffff;
+    background: #2563eb;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(37,99,235,0.25);
+    transition: background 0.15s;
+  }
+  .tool-menu-btn:hover { background: #1d4ed8; }
+  .nav-logout-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #dc2626;
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  /* ドロワーモーダル */
+  .tool-menu-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 99999;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px 20px 16px;
+    box-sizing: border-box;
+  }
+  .tool-menu-modal.open {
+    display: flex;
+  }
+  .tool-menu-sheet {
+    background: #ffffff;
+    width: 100%;
+    max-width: 820px;
+    max-height: calc(100vh - 60px);
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: toolModalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes toolModalIn {
+    from { opacity: 0; transform: translateY(-16px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .tool-sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 18px;
+    background: #0f172a;
+    color: #ffffff;
+  }
+  .tool-sheet-title {
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tool-sheet-close {
+    background: #334155;
+    color: #f8fafc;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .tool-sheet-body {
+    padding: 16px 18px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex: 1;
+  }
+  .tool-cat-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+    margin-top: 12px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 3px;
+  }
+  .tool-cat-title:first-child { margin-top: 0; }
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 6px;
+  }
+  .tool-link-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #1e293b;
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .tool-link-card:hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+    color: #1d4ed8;
+  }
+  .tool-link-card.active {
+    background: #dbeafe;
+    border-color: #3b82f6;
+    color: #1e40af;
+    font-weight: 700;
+  }
+  .tool-icon { font-size: 14px; }
+
+</style>
 
 <style id="common-nav-styles">
   .nav-bar {
@@ -1350,6 +1386,11 @@
   }
 
     .mobile-detail-btn { display: none; }
+        /* PC用アコーディオンリセット（PCでは常時展開） */
+    .mobile-filter-accordion-toggle { display: none; }
+    /* PC default */
+    @media (min-width: 769px) { .mobile-filter-collapsible { display: block !important; } }
+    .mobile-row-toggle-arrow { display: none; }
     /* --- スマホアプリ (PWA) 最適化スタイル --- */
     @media (max-width: 768px) {
       body {
@@ -1996,6 +2037,11 @@
   }
 
     .mobile-detail-btn { display: none; }
+        /* PC用アコーディオンリセット（PCでは常時展開） */
+    .mobile-filter-accordion-toggle { display: none; }
+    /* PC default */
+    @media (min-width: 769px) { .mobile-filter-collapsible { display: block !important; } }
+    .mobile-row-toggle-arrow { display: none; }
     /* --- スマホアプリ (PWA) 最適化スタイル --- */
     @media (max-width: 768px) {
       body {
@@ -2453,40 +2499,155 @@
 <header class="nav-bar">
   <div class="nav-inner">
     <div class="nav-title">
-      <span>💊</span> 医薬品890品目 添付文書実務パッケージ
+      <span>💊</span> <a href="添付文書検索ビューア.html" style="color:inherit; text-decoration:none;">医薬品890品目 実務パッケージ</a>
     </div>
-    <nav class="nav-links">
-      <a href="添付文書検索ビューア.html" class="nav-btn active">🔍 添付文書検索ビューア</a>
-      <a href="災害時医療・BCP＆夜間休日輪番・備蓄医薬品管理完全実務マニュアル.html" class="nav-btn">🚨 災害時医療・BCP・夜間休日</a>
-      <a href="感染症・抗ウイルス薬・抗菌薬適正使用＆パキロビッド・ゾコーバ併用禁忌完全鑑査マニュアル.html" class="nav-btn">🦠 感染症・抗ウイルス・抗菌薬</a>
-      <a href="簡易懸濁法・錠剤粉砕・脱カプセル＆経管投与（胃瘻）適否完全実務マニュアル.html" class="nav-btn">🥣 簡易懸濁・粉砕・経管投与</a>
-      <a href="吸入指導加算・自己注射・特殊デバイス実技鑑査＆指導料算定完全実務マニュアル.html" class="nav-btn">💨 吸入指導＆自己注射</a>
-      <a href="長期収載品の選定療養＆後発品変更不可・患者自己負担完全実務マニュアル.html" class="nav-btn">🏷️ 長期収載品・選定療養</a>
-      <a href="在宅訪問薬剤管理指導＆多職種連携（医師・ケアマネ報告書）完全実務マニュアル.html" class="nav-btn">🏠 在宅訪問＆多職種連携</a>
-      <a href="他科処方・広域処方鑑査＆門前外頻出薬・他院併用薬相互作用完全マニュアル.html" class="nav-btn">🏥 他科・広域処方鑑査</a>
-      <a href="薬歴記載（SOAP法）＆個別指導対策・指導料算定完全マニュアル.html" class="nav-btn">📑 薬歴SOAP＆個別指導対策</a>
-      <a href="疑義照会＆調剤過誤・ヒヤリハット防止・医療事故対策完全マニュアル.html" class="nav-btn">🚨 疑義照会＆調剤過誤防止</a>
-      <a href="高齢者・ポリファーマシー鑑査＆PTP誤飲・認知症・残薬調整完全マニュアル.html" class="nav-btn">👴 高齢者・ポリファーマシー</a>
-      <a href="妊婦・授乳婦・生殖年齢患者_添付文書禁忌＆授乳移行・胎児安全性完全マニュアル.html" class="nav-btn">🤰 妊婦・授乳婦・胎児安全性</a>
-      <a href="運転制限（禁止・注意・安全薬）＆適用上の注意・定期検査義務完全マニュアル.html" class="nav-btn">🚗 運転制限・適用注意・検査</a>
-      <a href="小児用量換算・禁忌＆透析・腎不全投与設計完全マニュアル.html" class="nav-btn">👶 小児・透析投与設計</a>
-      <a href="麻薬・覚醒剤原料・毒薬劇薬_法的適正管理＆薬事監視・事故届完全マニュアル.html" class="nav-btn">⚖️ 麻薬・法規管理</a>
-      <a href="ハイリスク薬管理指導＆保管・特殊手技・パニック値完全ガイド.html" class="nav-btn">⚡ ハイリスク薬・特殊管理</a>
-      <a href="処方鑑査＆保険請求_実務トラップ完全総まとめガイド.html" class="nav-btn">📑 処方鑑査・実務総まとめ</a>
-      <a href="配合剤vs単剤_適応症・用量上限・第一選択制限完全ガイド.html" class="nav-btn">💊 配合剤vs単剤ガイド</a>
-      <a href="同一成分・別商品名・規格違い_適応不一致完全ガイド.html" class="nav-btn">🔀 同一成分・別適応</a>
-      <a href="支払基金審査徹底対策_返戻査定防止＆公式審査事例完全マニュアル.html" class="nav-btn">⚖️ 支払基金審査対策</a>
-      <a href="併用薬・相互作用＆用法用量影響_添付文書完全ガイド.html" class="nav-btn">🔄 併用薬・用量影響</a>
-      <a href="臨床トラップ＆ハイリスク相互作用_添付文書完全ガイド.html" class="nav-btn">⚠️ 臨床トラップ23選</a>
-      <a href="保険請求査定防止＆添付文書実務ガイド.html" class="nav-btn">🛡️ 保険請求査定防止</a>
-      <a href="適応症・効能効果_厳格審査マニュアル.html" class="nav-btn">🎯 適応症・厳格審査</a>
-      <a href="適宜増減なし医薬品一覧_厳格用量マニュアル.html" class="nav-btn">📏 適宜増減なし263</a>
-      <a href="検査値用量調整_適正使用ガイド.html" class="nav-btn">🧪 検査値用量調整</a>
-      <a href="なぜ厳しい設定があるのか_医薬品適正使用と規制の歴史・医学的理由.html" class="nav-btn">📜 規制・医学的理由</a>
-      <button onclick="pharmaLogout()" class="nav-btn" style="background:#dc2626; color:#fff; border-color:#ef4444; margin-left:auto; cursor:pointer;">🔒 ログアウト</button>
-    </nav>
   </div>
 </header>
+
+<!-- 全27実務ツール 展開式ドロワーメニュー -->
+<div id="toolMenuModal" class="tool-menu-modal" onclick="closeToolMenuOnBackdrop(event)">
+  <div class="tool-menu-sheet">
+    <div class="tool-sheet-header">
+      <div class="tool-sheet-title">
+        <span>📚</span> 全27実務マニュアル・業務ツール一覧
+      </div>
+      <button type="button" class="tool-sheet-close" onclick="toggleToolMenu()">✕ 閉じる</button>
+    </div>
+    <div class="tool-sheet-body">
+      <div class="tool-cat-title">🔍 検索・原本ビューア</div>
+      <div class="tool-grid">
+        <a href="添付文書検索ビューア.html" class="tool-link-card active">
+          <span class="tool-icon">🔍</span>
+          <span class="tool-name">添付文書検索ビューア（890品目）</span>
+        </a>
+      </div>
+
+      <div class="tool-cat-title">🚨 緊急・感染・夜間休日</div>
+      <div class="tool-grid">
+        <a href="災害時医療・BCP＆夜間休日輪番・備蓄医薬品管理完全実務マニュアル.html" class="tool-link-card">
+          <span class="tool-icon">🚨</span>
+          <span class="tool-name">災害時医療・BCP・夜間休日</span>
+        </a>
+        <a href="感染症・抗ウイルス薬・抗菌薬適正使用＆パキロビッド・ゾコーバ併用禁忌完全鑑査マニュアル.html" class="tool-link-card">
+          <span class="tool-icon">🦠</span>
+          <span class="tool-name">感染症・抗ウイルス・抗菌薬</span>
+        </a>
+      </div>
+
+      <div class="tool-cat-title">🥣 調剤手技・指導・在宅</div>
+      <div class="tool-grid">
+        <a href="簡易懸濁法・錠剤粉砕・脱カプセル＆経管投与（胃瘻）適否完全実務マニュアル.html" class="tool-link-card">
+          <span class="tool-icon">🥣</span>
+          <span class="tool-name">簡易懸濁・粉砕・経管投与</span>
+        </a>
+        <a href="吸入指導加算・自己注射・特殊デバイス実技鑑査＆指導料算定完全実務マニュアル.html" class="tool-link-card">
+          <span class="tool-icon">💨</span>
+          <span class="tool-name">吸入指導＆自己注射</span>
+        </a>
+        <a href="在宅訪問薬剤管理指導＆多職種連携（医師・ケアマネ報告書）完全実務マニュアル.html" class="tool-link-card">
+          <span class="tool-icon">🏠</span>
+          <span class="tool-name">在宅訪問＆多職種連携</span>
+        </a>
+        <a href="薬歴記載（SOAP法）＆個別指導対策・指導料算定完全マニュアル.html" class="tool-link-card">
+          <span class="tool-icon">📑</span>
+          <span class="tool-name">薬歴SOAP＆個別指導対策</span>
+        </a>
+        <a href="長期収載品の選定療養＆後発品変更不可・患者自己負担完全実務マニュアル.html" class="tool-link-card">
+          <span class="tool-icon">🏷️</span>
+          <span class="tool-name">長期収載品・選定療養</span>
+        </a>
+      </div>
+
+      <div class="tool-cat-title">⚠️ 処方鑑査・トラップ・安全管理</div>
+      <div class="tool-grid">
+        <a href="処方鑑査＆保険請求_実務トラップ完全総まとめガイド.html" class="tool-link-card">
+          <span class="tool-icon">📑</span>
+          <span class="tool-name">処方鑑査・実務総まとめ</span>
+        </a>
+        <a href="疑義照会＆調剤過誤・ヒヤリハット防止・医療事故対策完全マニュアル.html" class="tool-link-card">
+          <span class="tool-icon">🚨</span>
+          <span class="tool-name">疑義照会＆調剤過誤防止</span>
+        </a>
+        <a href="臨床トラップ＆ハイリスク相互作用_添付文書完全ガイド.html" class="tool-link-card">
+          <span class="tool-icon">⚠️</span>
+          <span class="tool-name">臨床トラップ23選</span>
+        </a>
+        <a href="ハイリスク薬管理指導＆保管・特殊手技・パニック値完全ガイド.html" class="tool-link-card">
+          <span class="tool-icon">⚡</span>
+          <span class="tool-name">ハイリスク薬・特殊管理</span>
+        </a>
+        <a href="併用薬・相互作用＆用法用量影響_添付文書完全ガイド.html" class="tool-link-card">
+          <span class="tool-icon">🔄</span>
+          <span class="tool-name">併用薬・用量影響</span>
+        </a>
+        <a href="配合剤vs単剤_適応症・用量上限・第一選択制限完全ガイド.html" class="tool-link-card">
+          <span class="tool-icon">💊</span>
+          <span class="tool-name">配合剤vs単剤ガイド</span>
+        </a>
+        <a href="同一成分・別商品名・規格違い_適応不一致完全ガイド.html" class="tool-link-card">
+          <span class="tool-icon">🔀</span>
+          <span class="tool-name">同一成分・別適応</span>
+        </a>
+        <a href="他科処方・広域処方鑑査＆門前外頻出薬・他院併用薬相互作用完全マニュアル.html" class="tool-link-card">
+          <span class="tool-icon">🏥</span>
+          <span class="tool-name">他科・広域処方鑑査</span>
+        </a>
+      </div>
+
+      <div class="tool-cat-title">👶 特殊患者・安全管理・検査値</div>
+      <div class="tool-grid">
+        <a href="高齢者・ポリファーマシー鑑査＆PTP誤飲・認知症・残薬調整完全マニュアル.html" class="tool-link-card">
+          <span class="tool-icon">👴</span>
+          <span class="tool-name">高齢者・ポリファーマシー</span>
+        </a>
+        <a href="妊婦・授乳婦・生殖年齢患者_添付文書禁忌＆授乳移行・胎児安全性完全マニュアル.html" class="tool-link-card">
+          <span class="tool-icon">🤰</span>
+          <span class="tool-name">妊婦・授乳婦・胎児安全性</span>
+        </a>
+        <a href="小児用量換算・禁忌＆透析・腎不全投与設計完全マニュアル.html" class="tool-link-card">
+          <span class="tool-icon">👶</span>
+          <span class="tool-name">小児・透析投与設計</span>
+        </a>
+        <a href="運転制限（禁止・注意・安全薬）＆適用上の注意・定期検査義務完全マニュアル.html" class="tool-link-card">
+          <span class="tool-icon">🚗</span>
+          <span class="tool-name">運転制限・適用注意・検査</span>
+        </a>
+        <a href="検査値用量調整_適正使用ガイド.html" class="tool-link-card">
+          <span class="tool-icon">🧪</span>
+          <span class="tool-name">検査値用量調整</span>
+        </a>
+      </div>
+
+      <div class="tool-cat-title">⚖️ 保険請求・支払基金・法規</div>
+      <div class="tool-grid">
+        <a href="保険請求査定防止＆添付文書実務ガイド.html" class="tool-link-card">
+          <span class="tool-icon">🛡️</span>
+          <span class="tool-name">保険請求査定防止</span>
+        </a>
+        <a href="支払基金審査徹底対策_返戻査定防止＆公式審査事例完全マニュアル.html" class="tool-link-card">
+          <span class="tool-icon">⚖️</span>
+          <span class="tool-name">支払基金審査対策</span>
+        </a>
+        <a href="適応症・効能効果_厳格審査マニュアル.html" class="tool-link-card">
+          <span class="tool-icon">🎯</span>
+          <span class="tool-name">適応症・厳格審査</span>
+        </a>
+        <a href="適宜増減なし医薬品一覧_厳格用量マニュアル.html" class="tool-link-card">
+          <span class="tool-icon">📏</span>
+          <span class="tool-name">適宜増減なし263</span>
+        </a>
+        <a href="麻薬・覚醒剤原料・毒薬劇薬_法的適正管理＆薬事監視・事故届完全マニュアル.html" class="tool-link-card">
+          <span class="tool-icon">⚖️</span>
+          <span class="tool-name">麻薬・法規管理</span>
+        </a>
+        <a href="なぜ厳しい設定があるのか_医薬品適正使用と規制の歴史・医学的理由.html" class="tool-link-card">
+          <span class="tool-icon">📜</span>
+          <span class="tool-name">規制・医学的理由</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
 
   <header class="header">
   <script src="auth-guard.js"></script>
@@ -2529,9 +2690,17 @@
       <div class="search-row">
         <div class="search-input-wrap">
           <span class="search-icon">🔍</span>
-          <input type="text" id="searchInput" class="search-input" placeholder="キーワードを入力（例: 腎機能、妊婦、併用禁忌、狭心症、重大な副作用）" autofocus>
+          <input type="text" id="searchInput" class="search-input" placeholder="薬品名・一般名・刻印・病名・禁忌..." autofocus>
         </div>
-        <select id="searchTarget" class="search-target-select">
+        <button type="button" class="mobile-filter-accordion-toggle" onclick="toggleMobileFilterPanel()">
+          <span style="display:flex; align-items:center; gap:4px;">⚙️ 絞り込み・項目指定</span>
+          <span id="mobileFilterArrow">▼ 展開</span>
+        </button>
+      </div>
+
+      <div id="mobileFilterBody" class="mobile-filter-collapsible">
+        <div style="margin-bottom: 6px;">
+          <select id="searchTarget" class="search-target-select">
           <optgroup label="── 基本検索 ──">
             <option value="all" selected>🔍 【全文検索】全26項目まるごと横断</option>
             <option value="name">💊 薬品名・一般名・YJコード・メーカー</option>
@@ -2602,7 +2771,53 @@
           <button class="quick-btn" onclick="resetFilters()">🔄 条件クリア</button>
         </div>
       </div>
+      </div> <!-- end mobileFilterBody -->
     </section>
+
+    
+
+
+    <div class="table-card">
+      <div class="table-header-bar">
+        <div class="table-count">
+          検索結果: <strong id="filteredCount">840</strong> 件 / 全 840 品目
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <span>表示件数:</span>
+          <select id="pageSizeSelect" class="filter-select">
+            <option value="25">25件表示</option>
+            <option value="50">50件表示</option>
+            <option value="100">100件表示</option>
+            <option value="840">全件表示</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 45px;">No.</th>
+              <th style="width: 38px; text-align: center;">⭐</th>
+              <th style="min-width: 200px;">薬品名 / メーカー</th>
+              <th style="min-width: 140px;">一般名</th>
+              <th style="min-width: 140px;">薬効分類</th>
+              <th style="width: 60px;">区分</th>
+              <th style="min-width: 380px;">検索該当箇所・添付文書要約プレビュー (クリックで詳細)</th>
+              <th style="width: 110px; text-align: center;">添付文書PDF</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <button id="prevBtn" class="page-btn">← 前のページ</button>
+        <span id="pageInfo" style="font-size: 13px; font-weight: 600; margin: 0 8px;"></span>
+        <button id="nextBtn" class="page-btn">次のページ →</button>
+      </div>
+    </div>
+  
 
     <section class="knowledge-hub-panel">
       <div class="knowledge-hub-header" onclick="toggleKnowledgeHub()">
@@ -3575,49 +3790,7 @@
 
       </div>
     </section>
-
-
-    <div class="table-card">
-      <div class="table-header-bar">
-        <div class="table-count">
-          検索結果: <strong id="filteredCount">840</strong> 件 / 全 840 品目
-        </div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-          <span>表示件数:</span>
-          <select id="pageSizeSelect" class="filter-select">
-            <option value="25">25件表示</option>
-            <option value="50">50件表示</option>
-            <option value="100">100件表示</option>
-            <option value="840">全件表示</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th style="width: 45px;">No.</th>
-              <th style="width: 38px; text-align: center;">⭐</th>
-              <th style="min-width: 200px;">薬品名 / メーカー</th>
-              <th style="min-width: 140px;">一般名</th>
-              <th style="min-width: 140px;">薬効分類</th>
-              <th style="width: 60px;">区分</th>
-              <th style="min-width: 380px;">検索該当箇所・添付文書要約プレビュー (クリックで詳細)</th>
-              <th style="width: 110px; text-align: center;">添付文書PDF</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-      </div>
-
-      <div class="pagination">
-        <button id="prevBtn" class="page-btn">← 前のページ</button>
-        <span id="pageInfo" style="font-size: 13px; font-weight: 600; margin: 0 8px;"></span>
-        <button id="nextBtn" class="page-btn">次のページ →</button>
-      </div>
-    </div>
-  </main>
+</main>
 
   <!-- 詳細モーダル -->
   <div id="detailModal" class="modal-backdrop">
@@ -3914,7 +4087,7 @@
         const geBadgeClass = item.ge === '先' ? 'badge-origin' : 'badge-generic';
 
         return `
-          <tr>
+          <tr id="drugRow-${item.id}" class="drug-table-row" onclick="toggleDrugRow(${item.id}, event)">
             <td style="color: var(--muted); font-size: 11px;">${item.id}</td>
             <td style="text-align: center;">
               <button class="fav-btn ${favoriteIds.has(item.id) ? 'active' : ''}" 
@@ -3924,9 +4097,10 @@
               </button>
             </td>
             <td>
-              <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                <button class="drug-name-btn" onclick="openDetailModal(${item.id})">${highlightText(item.n, currentQuery)}</button>
+              <div class="drug-name-header-row">
+                <button class="drug-name-btn" onclick="openDetailModal(${item.id}); event.stopPropagation();">${highlightText(item.n, currentQuery)}</button>
                 ${insuranceAlertIds.has(item.id) ? '<span class="badge-insurance" title="厚生労働省告示による投薬制限（30日等）や保険算定要件あり">⚠️ 保険注意</span>' : ''}
+                <span class="mobile-row-toggle-arrow" id="rowArrow-${item.id}">▾</span>
               </div>
               <div class="maker-text">${item.m}</div>
             </td>
@@ -3936,18 +4110,54 @@
               <span class="badge ${routeBadgeClass}">${item.r || '-'}用</span>
               <span class="badge ${geBadgeClass}" style="margin-top: 2px;">${item.ge === '先' ? '先発' : '後発'}</span>
             </td>
-            <td>${previewHtml}</td>
+            <td class="preview-cell">${previewHtml}</td>
             <td class="action-cell" style="text-align: center;">
-              <button class="mobile-detail-btn" onclick="openDetailModal(${item.id})">
+              <button class="mobile-detail-btn" onclick="openDetailModal(${item.id}); event.stopPropagation();">
                 📋 添付文書を見る ❯
               </button>
-              <a href="${getPdfUrl(item.pdf, item.n)}" target="_blank" class="pdf-link-btn" title="添付文書原本（ローカル/PMDA公式）を開く">
+              <a href="${getPdfUrl(item.pdf, item.n)}" target="_blank" class="pdf-link-btn" onclick="event.stopPropagation();" title="添付文書原本（ローカル/PMDA公式）を開く">
                 📄 原本
               </a>
             </td>
           </tr>
         `;
       }).join('');
+    }
+
+    
+    /* --- スマホ高密度 ＆ アコーディオン展開式UIロジック --- */
+    function toggleMobileFilterPanel() {
+      const body = document.getElementById('mobileFilterBody');
+      const arrow = document.getElementById('mobileFilterArrow');
+      if (!body) return;
+      const isOpen = body.classList.contains('open');
+      if (isOpen) {
+        body.classList.remove('open');
+        body.style.display = 'none';
+        if (arrow) arrow.textContent = '▼ 展開';
+      } else {
+        body.classList.add('open');
+        body.style.display = 'block';
+        if (arrow) arrow.textContent = '▲ 閉じる';
+      }
+    }
+
+    function toggleDrugRow(drugId, event) {
+      if (window.innerWidth > 768) return; // PCではトグルしない
+      if (event && (event.target.closest('button') || event.target.closest('a') || event.target.closest('input'))) {
+        return; // ボタン等のクリック時は行開閉を行わない
+      }
+      const row = document.getElementById(`drugRow-${drugId}`);
+      const arrow = document.getElementById(`rowArrow-${drugId}`);
+      if (!row) return;
+      const isExpanded = row.classList.contains('expanded');
+      if (isExpanded) {
+        row.classList.remove('expanded');
+        if (arrow) arrow.textContent = '▾';
+      } else {
+        row.classList.add('expanded');
+        if (arrow) arrow.textContent = '▴';
+      }
     }
 
     function openDetailModal(drugId) {
@@ -4982,5 +5192,28 @@ if ('serviceWorker' in navigator) {
     }
   </script>
 
+<script>
+
+  function toggleToolMenu() {
+    const modal = document.getElementById('toolMenuModal');
+    const arrow = document.getElementById('toolMenuArrow');
+    if (!modal) return;
+    const isOpen = modal.classList.contains('open');
+    if (isOpen) {
+      modal.classList.remove('open');
+      if (arrow) arrow.textContent = '▾';
+    } else {
+      modal.classList.add('open');
+      if (arrow) arrow.textContent = '▲';
+    }
+  }
+
+  function closeToolMenuOnBackdrop(e) {
+    if (e.target.id === 'toolMenuModal') {
+      toggleToolMenu();
+    }
+  }
+
+</script>
 </body>
 </html>
