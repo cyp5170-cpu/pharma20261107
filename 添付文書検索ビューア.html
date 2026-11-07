@@ -3742,5 +3742,113 @@ if ('serviceWorker' in navigator) {
     </div>
   </div>
 
+
+  <script>
+    /* --- スマホ専用ボトムナビ & バーコード・識別コードスキャン機能 --- */
+    let barcodeStream = null;
+    let barcodeInterval = null;
+
+    function switchMobileNav(tab) {
+      document.querySelectorAll('.b-nav-item').forEach(btn => btn.classList.remove('active'));
+      if (tab === 'search') {
+        const btn = document.querySelector('.b-nav-item:nth-child(1)');
+        if (btn) btn.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const input = document.getElementById('searchInput');
+        if (input) input.focus();
+      } else if (tab === 'knowledge') {
+        const btn = document.querySelector('.b-nav-item:nth-child(3)');
+        if (btn) btn.classList.add('active');
+        const card = document.querySelector('.knowledge-summary-card');
+        if (card) card.scrollIntoView({ behavior: 'smooth' });
+      } else if (tab === 'favorites') {
+        const btn = document.querySelector('.b-nav-item:nth-child(4)');
+        if (btn) btn.classList.add('active');
+        const favBtn = document.getElementById('favFilterBtn');
+        if (favBtn) favBtn.click();
+      }
+    }
+
+    async function openBarcodeScanner() {
+      const modal = document.getElementById('barcodeModal');
+      const video = document.getElementById('barcodeVideo');
+      const status = document.getElementById('scanStatus');
+      if (!modal || !video) return;
+
+      modal.style.display = 'flex';
+      status.textContent = 'カメラ起動中...';
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
+        barcodeStream = stream;
+        video.srcObject = stream;
+        await video.play();
+        status.textContent = 'バーコード（GS1/JAN）を枠内にかざしてください';
+        startBarcodeDetection(video, status);
+      } catch (err) {
+        console.error('Camera access failed:', err);
+        status.innerHTML = '<span style="color:#ef4444;">⚠️ カメラを起動できませんでした。<br>（ブラウザのカメラ権限を許可するか、下の入力欄をご利用ください）</span>';
+      }
+    }
+
+    function closeBarcodeScanner() {
+      const modal = document.getElementById('barcodeModal');
+      const video = document.getElementById('barcodeVideo');
+      if (modal) modal.style.display = 'none';
+
+      if (barcodeInterval) {
+        clearInterval(barcodeInterval);
+        barcodeInterval = null;
+      }
+      if (barcodeStream) {
+        barcodeStream.getTracks().forEach(track => track.stop());
+        barcodeStream = null;
+      }
+      if (video) video.srcObject = null;
+    }
+
+    function startBarcodeDetection(video, statusElem) {
+      if ('BarcodeDetector' in window) {
+        const detector = new BarcodeDetector({
+          formats: ['ean_13', 'ean_8', 'code_128', 'data_matrix', 'qr_code']
+        });
+        barcodeInterval = setInterval(async () => {
+          try {
+            const barcodes = await detector.detect(video);
+            if (barcodes.length > 0) {
+              const code = barcodes[0].rawValue;
+              onBarcodeDetected(code);
+            }
+          } catch (e) {
+            // detect frame error
+          }
+        }, 300);
+      } else {
+        statusElem.innerHTML = 'カメラ映像表示中。<br><span style="font-size:11px; color:#64748b;">※お使いのブラウザがWebバーコード自動認識に非対応の場合は、バーコード下の番号を手動入力してください。</span>';
+      }
+    }
+
+    function onBarcodeDetected(code) {
+      closeBarcodeScanner();
+      // JAN/GS1コードを検索欄に入れて検索
+      const cleanCode = code.replace(/[^0-9]/g, '');
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.value = cleanCode || code;
+        searchTarget.value = 'all';
+        applyFilter();
+        alert(`📸 バーコードを検出しました！\nコード: ${code}`);
+      }
+    }
+
+    function handleManualBarcode() {
+      const input = document.getElementById('manualBarcodeInput');
+      if (!input || !input.value.trim()) return;
+      onBarcodeDetected(input.value.trim());
+    }
+  </script>
+
 </body>
 </html>
