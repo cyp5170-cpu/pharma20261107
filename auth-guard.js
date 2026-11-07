@@ -284,6 +284,26 @@ function pharmaLogout() {
       }
     }
   `;
+
+    /* 全マニュアル共通：スマホ画面端まで100%フル幅活用 */
+    @media (max-width: 768px) {
+      html, body {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        margin: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+      .container, .main-container, .content-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+        box-sizing: border-box !important;
+      }
+    }
+
   document.head.appendChild(styleEl);
 
   // マニュアルリスト定義
