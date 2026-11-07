@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <script src="auth-guard.js"></script>
+  <meta charset="UTF-8">
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0284c7">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="医薬品890">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>同一成分・別商品名・規格違い 適応不一致（効能違い）完全攻略ガイド</title>
+  <style>
+    :root {
+      --primary: #0f172a;
+      --secondary: #1e293b;
+      --accent: #7c3aed;
+      --accent-light: #f5f3ff;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --warning: #d97706;
+      --warning-bg: #fef3c7;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Meiryo", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #6d28d9 100%);
+      color: white;
+      padding: 32px 40px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .nav-links { display: flex; gap: 8px; flex-wrap: wrap; }
+    .nav-btn {
+      padding: 6px 12px;
+      background: rgba(255,255,255,0.12);
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.28); transform: translateY(-1px); }
+    .header h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; display: flex; align-items: center; gap: 10px; }
+    .header p { font-size: 13.5px; opacity: 0.92; margin-top: 6px; }
+
+    .container {
+      max-width: 1280px;
+      margin: 28px auto;
+      padding: 0 24px;
+    }
+
+    /* 検索＆コントロール */
+    .controls {
+      background: white;
+      padding: 20px 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 12px 18px;
+      font-size: 14px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: var(--accent); }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 8px 16px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* セクションブロック */
+    .content-sec {
+      margin-bottom: 40px;
+    }
+    .sec-header {
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2.5px solid var(--accent);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .sec-header h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sec-header span {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* 表スタイル */
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow-x: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      margin-bottom: 24px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      text-align: left;
+    }
+    th {
+      background: #f8fafc;
+      color: #334155;
+      font-weight: 800;
+      padding: 14px 18px;
+      border-bottom: 1.5px solid var(--border);
+      white-space: nowrap;
+    }
+    td {
+      padding: 14px 18px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: top;
+    }
+    tr:hover td { background: #fafafa; }
+
+    /* バッジ */
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      display: inline-block;
+    }
+    .badge-ins { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+    .badge-self { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+    .badge-warn { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
+    .badge-purple { background: #f3e8ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+
+    /* カードグリッド */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 20px;
+    }
+    @media (max-width: 640px) {
+      .card-grid { grid-template-columns: 1fr; }
+    }
+    .diff-card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .diff-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+    }
+    .card-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .generic-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .diff-box {
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .diff-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px dashed #cbd5e1;
+    }
+    .diff-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .prod-name { font-weight: 800; color: #1e293b; }
+    .prod-ind { color: #475569; font-size: 12px; text-align: right; }
+    .trap-reason {
+      background: #fff5f5;
+      border-left: 4px solid var(--danger);
+      padding: 8px 12px;
+      font-size: 12px;
+      color: #991b1b;
+      font-weight: 600;
+      border-radius: 4px;
+    }
+  </style>
+
+<style id="common-nav-styles">
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #e2e8f0;
+    padding: 8px 16px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  }
+  .nav-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .nav-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #4f46e5;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 9px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #334155;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+  .nav-btn:hover {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-color: #3b82f6;
+  }
+  .nav-btn.active {
+    background: #4f46e5;
+    color: #fff !important;
+    border-color: #4f46e5 !important;
+  }
+</style>
+
+</head>
+<body>
+
+  <header class="header">
+  <script src="auth-guard.js"></script>
+    <div class="header-top">
+      <div>
+        <h1>🎯 同一成分・別商品名・規格違い 適応不一致（効能違い）完全攻略ガイド</h1>
+        <p>〜同じ成分なのに病名が通らない！別商品名・規格上限・ジェネリック特許の壁を完全解明〜</p>
+      </div>
+                <header class="nav-bar">
+  <div class="nav-inner">
+    <div class="nav-title">
+      <span>💊</span> 医薬品890品目 添付文書実務パッケージ
+    </div>
+    <nav class="nav-links">
+      <a href="添付文書検索ビューア.html" class="nav-btn">🔍 添付文書検索ビューア</a>
+      <a href="災害時医療・BCP＆夜間休日輪番・備蓄医薬品管理完全実務マニュアル.html" class="nav-btn">🚨 災害時医療・BCP・夜間休日</a>
+      <a href="感染症・抗ウイルス薬・抗菌薬適正使用＆パキロビッド・ゾコーバ併用禁忌完全鑑査マニュアル.html" class="nav-btn">🦠 感染症・抗ウイルス・抗菌薬</a>
+      <a href="簡易懸濁法・錠剤粉砕・脱カプセル＆経管投与（胃瘻）適否完全実務マニュアル.html" class="nav-btn">🥣 簡易懸濁・粉砕・経管投与</a>
+      <a href="吸入指導加算・自己注射・特殊デバイス実技鑑査＆指導料算定完全実務マニュアル.html" class="nav-btn">💨 吸入指導＆自己注射</a>
+      <a href="長期収載品の選定療養＆後発品変更不可・患者自己負担完全実務マニュアル.html" class="nav-btn">🏷️ 長期収載品・選定療養</a>
+      <a href="在宅訪問薬剤管理指導＆多職種連携（医師・ケアマネ報告書）完全実務マニュアル.html" class="nav-btn">🏠 在宅訪問＆多職種連携</a>
+      <a href="他科処方・広域処方鑑査＆門前外頻出薬・他院併用薬相互作用完全マニュアル.html" class="nav-btn">🏥 他科・広域処方鑑査</a>
+      <a href="薬歴記載（SOAP法）＆個別指導対策・指導料算定完全マニュアル.html" class="nav-btn">📑 薬歴SOAP＆個別指導対策</a>
+      <a href="疑義照会＆調剤過誤・ヒヤリハット防止・医療事故対策完全マニュアル.html" class="nav-btn">🚨 疑義照会＆調剤過誤防止</a>
+      <a href="高齢者・ポリファーマシー鑑査＆PTP誤飲・認知症・残薬調整完全マニュアル.html" class="nav-btn">👴 高齢者・ポリファーマシー</a>
+      <a href="妊婦・授乳婦・生殖年齢患者_添付文書禁忌＆授乳移行・胎児安全性完全マニュアル.html" class="nav-btn">🤰 妊婦・授乳婦・胎児安全性</a>
+      <a href="運転制限（禁止・注意・安全薬）＆適用上の注意・定期検査義務完全マニュアル.html" class="nav-btn">🚗 運転制限・適用注意・検査</a>
+      <a href="小児用量換算・禁忌＆透析・腎不全投与設計完全マニュアル.html" class="nav-btn">👶 小児・透析投与設計</a>
+      <a href="麻薬・覚醒剤原料・毒薬劇薬_法的適正管理＆薬事監視・事故届完全マニュアル.html" class="nav-btn">⚖️ 麻薬・法規管理</a>
+      <a href="ハイリスク薬管理指導＆保管・特殊手技・パニック値完全ガイド.html" class="nav-btn">⚡ ハイリスク薬・特殊管理</a>
+      <a href="処方鑑査＆保険請求_実務トラップ完全総まとめガイド.html" class="nav-btn">📑 処方鑑査・実務総まとめ</a>
+      <a href="配合剤vs単剤_適応症・用量上限・第一選択制限完全ガイド.html" class="nav-btn">💊 配合剤vs単剤ガイド</a>
+      <a href="同一成分・別商品名・規格違い_適応不一致完全ガイド.html" class="nav-btn active">🔀 同一成分・別適応</a>
+      <a href="支払基金審査徹底対策_返戻査定防止＆公式審査事例完全マニュアル.html" class="nav-btn">⚖️ 支払基金審査対策</a>
+      <a href="併用薬・相互作用＆用法用量影響_添付文書完全ガイド.html" class="nav-btn">🔄 併用薬・用量影響</a>
+      <a href="臨床トラップ＆ハイリスク相互作用_添付文書完全ガイド.html" class="nav-btn">⚠️ 臨床トラップ23選</a>
+      <a href="保険請求査定防止＆添付文書実務ガイド.html" class="nav-btn">🛡️ 保険請求査定防止</a>
+      <a href="適応症・効能効果_厳格審査マニュアル.html" class="nav-btn">🎯 適応症・厳格審査</a>
+      <a href="適宜増減なし医薬品一覧_厳格用量マニュアル.html" class="nav-btn">📏 適宜増減なし263</a>
+      <a href="検査値用量調整_適正使用ガイド.html" class="nav-btn">🧪 検査値用量調整</a>
+      <a href="なぜ厳しい設定があるのか_医薬品適正使用と規制の歴史・医学的理由.html" class="nav-btn">📜 規制・医学的理由</a>
+      <button onclick="pharmaLogout()" class="nav-btn" style="background:#dc2626; color:#fff; border-color:#ef4444; margin-left:auto; cursor:pointer;">🔒 ログアウト</button>
+    </nav>
+  </div>
+</header>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="controls">
+      <input type="text" id="searchInput" class="search-input" placeholder="🔍 有効成分名・商品名・適応症（例: タダラフィル、カンデサルタン、リウマトレックス、リリカ、デュタステリド、心不全、AGA、ED...）を入力してリアルタイム絞り込み">
+      <div class="tabs">
+        <button class="tab-btn active" data-target="all">すべて表示</button>
+        <button class="tab-btn" data-target="sec-brands">🏷️ 同一成分・別商品名 (保険/自費/別科)</button>
+        <button class="tab-btn" data-target="sec-strengths">📏 同一商品・規格（mg）違いの適応欠落</button>
+        <button class="tab-btn" data-target="sec-generic">🧬 先発品 vs 後発品（用途特許の壁）</button>
+        <button class="tab-btn" data-target="sec-protocol">🛡️ 疑義照会・調剤防衛プロトコル</button>
+      </div>
+    </section>
+
+    <!-- 第1章: 同一成分・別商品名 -->
+    <section class="content-sec" id="sec-brands">
+      <div class="sec-header">
+        <h2>🏷️ 第1章：同一成分で「商品名」によって適応症・保険/自費が激変する医薬品</h2>
+        <span>名前が違うだけで診療科・薬価・保険請求の可否が完全に分裂する代表薬</span>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>有効成分（一般名）</th>
+              <th>商品名・規格</th>
+              <th>承認されている適応症（効能・効果）</th>
+              <th>保険区分・診療科</th>
+              <th>審査・臨床上の重大トラップ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="3"><strong>タダラフィル</strong></td>
+              <td><strong>ザルティア錠</strong> (2.5/5mg)</td>
+              <td>前立腺肥大症に伴う排尿障害</td>
+              <td><span class="badge badge-ins">保険適用</span> 泌尿器科</td>
+              <td rowspan="3">同一成分なのに3つの商品名で病名が完全に排他的。前立腺肥大症に「シアリス」を出すとED薬として100%査定。肺高血圧症に「ザルティア」は適応外。</td>
+            </tr>
+            <tr>
+              <td><strong>アドシルカ錠</strong> (20mg)</td>
+              <td>肺動脈性肺高血圧症（PAH）</td>
+              <td><span class="badge badge-ins">難病保険</span> 循環器科</td>
+            </tr>
+            <tr>
+              <td><strong>シアリス錠</strong> (5/10/20mg)</td>
+              <td>勃起不全（ED）</td>
+              <td><span class="badge badge-self">自由診療</span>（※不妊治療除く）</td>
+            </tr>
+
+            <tr>
+              <td rowspan="2"><strong>シルデナフィル</strong></td>
+              <td><strong>レバチオ錠</strong> (20mg)</td>
+              <td>肺動脈性肺高血圧症（PAH）</td>
+              <td><span class="badge badge-ins">難病保険</span> 循環器科</td>
+              <td rowspan="2">レバチオは保険適用だが、バイアグラは自由診療。誤ってバイアグラを保険請求すると即座に返戻・不正請求扱い。</td>
+            </tr>
+            <tr>
+              <td><strong>バイアグラ錠</strong> (25/50mg)</td>
+              <td>勃起不全（ED）</td>
+              <td><span class="badge badge-self">自由診療</span>（※不妊治療除く）</td>
+            </tr>
+
+            <tr>
+              <td rowspan="2"><strong>デュタステリド</strong></td>
+              <td><strong>アボルブカプセル</strong> (0.5mg)</td>
+              <td>前立腺肥大症</td>
+              <td><span class="badge badge-ins">保険適用</span> 泌尿器科</td>
+              <td rowspan="2">成分も用量（0.5mg）も完全に同一だが、AGA目的でアボルブを保険処方すると違法。前立腺肥大症にザガーロは保険不可。</td>
+            </tr>
+            <tr>
+              <td><strong>ザガーロカプセル</strong> (0.1/0.5mg)</td>
+              <td>男性型脱毛症（AGA）</td>
+              <td><span class="badge badge-self">自由診療</span> 皮膚科</td>
+            </tr>
+
+            <tr>
+              <td rowspan="2"><strong>メトトレキサート</strong></td>
+              <td><strong>リウマトレックス</strong> (2mg)</td>
+              <td>関節リウマチ、関節症性乾癬</td>
+              <td><span class="badge badge-ins">保険適用</span> 膠原病科<br>（<strong>週1回パルス投与</strong>）</td>
+              <td rowspan="2">リウマチ患者にメソトレキセート錠（2.5mg）を出すと適応外査定。さらに患者が「毎日服用」と誤認して骨髄抑制死する重大事故に直結。</td>
+            </tr>
+            <tr>
+              <td><strong>メソトレキセート錠</strong> (2.5mg)</td>
+              <td>急性白血病、悪性リンパ腫</td>
+              <td><span class="badge badge-ins">保険適用</span> 血液内科<br>（<strong>抗がん剤 連日/週数日</strong>）</td>
+            </tr>
+
+            <tr>
+              <td rowspan="2"><strong>A型ボツリヌス毒素</strong></td>
+              <td><strong>ボトックス注</strong> (50/100単位)</td>
+              <td>痙性斜頸、上肢・下肢痙縮、多汗症、過活動膀胱</td>
+              <td><span class="badge badge-ins">保険適用</span> リハビリ・泌尿器</td>
+              <td rowspan="2">美容医療（表情皺取り）用のボトックスビスタは自由診療。ボトックス注を美容目的で保険請求することは厳罰対象。</td>
+            </tr>
+            <tr>
+              <td><strong>ボトックスビスタ注</strong> (50単位)</td>
+              <td>眉間の表情皺、目尻の表情皺</td>
+              <td><span class="badge badge-self">自由診療</span> 美容外科</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 第2章: 規格（mg）違いによる適応欠落 -->
+    <section class="content-sec" id="sec-strengths">
+      <div class="sec-header">
+        <h2>📏 第2章：同じ商品名・同じ成分でも「規格（mg違い）」で適応が異なる薬</h2>
+        <span>高用量規格・低濃度規格で一部の適応病名が消えている薬局在庫840品目の実例</span>
+      </div>
+
+      <div class="card-grid">
+        <div class="diff-card">
+          <div class="card-title-row">
+            <span class="generic-name">カンデサルタン（ブロプレス等）</span>
+            <span class="badge badge-warn">高用量適応欠落</span>
+          </div>
+          <div class="diff-box">
+            <div class="diff-item">
+              <span class="prod-name">2mg・4mg・8mg 錠</span>
+              <span class="prod-ind">高血圧症、腎実質性高血圧症、<strong>慢性心不全</strong></span>
+            </div>
+            <div class="diff-item">
+              <span class="prod-name">12mg 錠</span>
+              <span class="prod-ind">高血圧症、腎実質性高血圧症のみ（<strong>心不全なし！</strong>）</span>
+            </div>
+          </div>
+          <div class="trap-reason">心不全患者に12mg錠を出すと「心不全の最大承認用量は8mgまで」のため、適応外過量投与として12mgが全額査定されます。</div>
+        </div>
+
+        <div class="diff-card">
+          <div class="card-title-row">
+            <span class="generic-name">タナトリル（イミダプリル）</span>
+            <span class="badge badge-warn">高用量適応欠落</span>
+          </div>
+          <div class="diff-box">
+            <div class="diff-item">
+              <span class="prod-name">2.5mg・5mg 錠</span>
+              <span class="prod-ind">高血圧症、<strong>1型糖尿病に伴う糖尿病性腎症</strong></span>
+            </div>
+            <div class="diff-item">
+              <span class="prod-name">10mg 錠</span>
+              <span class="prod-ind">高血圧症、腎実質性高血圧症のみ（<strong>糖尿病性腎症なし！</strong>）</span>
+            </div>
+          </div>
+          <div class="trap-reason">1型糖尿病性腎症の承認用量は5mgまで。10mg錠には適応症が存在しないため全額切られます。</div>
+        </div>
+
+        <div class="diff-card">
+          <div class="card-title-row">
+            <span class="generic-name">フルメトロン点眼（フルオロメトロン）</span>
+            <span class="badge badge-warn">濃度による適応差</span>
+          </div>
+          <div class="diff-box">
+            <div class="diff-item">
+              <span class="prod-name">0.1% 点眼液</span>
+              <span class="prod-ind">外眼部炎症 ＋ <strong>虹彩炎、ブドウ膜炎、術後炎症</strong></span>
+            </div>
+            <div class="diff-item">
+              <span class="prod-name">0.02% 点眼液</span>
+              <span class="prod-ind">眼瞼炎、結膜炎、角膜炎等（<strong>前眼部炎症なし！</strong>）</span>
+            </div>
+          </div>
+          <div class="trap-reason">白内障術後炎症やブドウ膜炎に0.02%を処方すると、病名不一致で査定対象になります。</div>
+        </div>
+
+        <div class="diff-card">
+          <div class="card-title-row">
+            <span class="generic-name">アスピリン（アセチルサリチル酸）</span>
+            <span class="badge badge-purple">用量による薬効激変</span>
+          </div>
+          <div class="diff-box">
+            <div class="diff-item">
+              <span class="prod-name">バイアスピリン 100mg</span>
+              <span class="prod-ind"><strong>抗血小板薬</strong>（虚血性心疾患、脳梗塞再発予防）</span>
+            </div>
+            <div class="diff-item">
+              <span class="prod-name">アスピリン 500mg・原末</span>
+              <span class="prod-ind"><strong>解熱鎮痛消炎薬（NSAIDs）</strong>（頭痛、腰痛等）</span>
+            </div>
+          </div>
+          <div class="trap-reason">100mgに「頭痛」病名を付けると効果なし査定。500mgを抗血小板目的で毎日飲むと胃潰瘍大出血。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 第3章: 先発品 vs 後発品の効能不一致 -->
+    <section class="content-sec" id="sec-generic">
+      <div class="sec-header">
+        <h2>🧬 第3章：先発品と後発品（ジェネリック）の「適応不一致（特許の壁）」</h2>
+        <span>先発品にある適応が、後発品には承認されていない！薬局鑑査の最大の落とし穴</span>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>一般名</th>
+              <th>先発医薬品名</th>
+              <th>先発品にのみ存在した（または一部後発品にない）適応症</th>
+              <th>なぜ不一致が起きるのか？</th>
+              <th>審査での結末と対策</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>プレガバリン</strong></td>
+              <td><strong>リリカカプセル・OD錠</strong></td>
+              <td><strong>「線維筋痛症に伴う疼痛」</strong></td>
+              <td>先発メーカーが後から追加取得した線維筋痛症の用途特許が残っていたため、後発品発売当初は「神経障害性疼痛」のみ承認。</td>
+              <td>病名が「線維筋痛症」の場合、適応のない後発品に変更調剤すると<strong>調剤レセプトが全額返戻・査定</strong>。適応追補の有無を確認必須。</td>
+            </tr>
+            <tr>
+              <td><strong>ガバペンチン</strong></td>
+              <td><strong>ガバペン錠</strong></td>
+              <td><strong>「神経障害性疼痛」</strong></td>
+              <td>後発品は「てんかん（部分発作）」のみで承認され、神経障害性疼痛の適応が取得できなかった。</td>
+              <td>疼痛病名でガバペンチン後発品を調剤すると100%査定。</td>
+            </tr>
+            <tr>
+              <td><strong>アトルバスタチン</strong></td>
+              <td><strong>リピトール錠</strong></td>
+              <td><strong>「家族性高コレステロール血症」</strong></td>
+              <td>一部の後発品メーカーが小児・家族性の適応を取得していない時期があった。</td>
+              <td>家族性高コレステロール血症病名の患者には、全適応を取得している後発品を選択する。</td>
+            </tr>
+            <tr>
+              <td><strong>エソメプラゾール</strong></td>
+              <td><strong>ネキシウムカプセル</strong></td>
+              <td><strong>「低用量アスピリン・NSAIDs投与時における胃潰瘍再発抑制」</strong></td>
+              <td>再発抑制適応の用途特許期間中、後発品には逆流性食道炎・胃潰瘍治療適応しかなかった。</td>
+              <td>「再発予防」病名で適応のない後発品を出すと過剰投与査定（※現在は特許満了に伴い順次追補承認）。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 第4章: 疑義照会・調剤防衛プロトコル -->
+    <section class="content-sec" id="sec-protocol">
+      <div class="sec-header">
+        <h2>🛡️ 第4章：現場の疑義照会・調剤鑑査 防衛プロトコル</h2>
+        <span>適応不一致による査定・過誤をゼロにするための手順</span>
+      </div>
+
+      <div class="card-grid">
+        <div class="diff-card">
+          <div class="card-title-row">
+            <span class="generic-name">① 一般名処方からの後発品選定時</span>
+            <span class="badge badge-purple">薬局の義務</span>
+          </div>
+          <p style="font-size: 13.5px; color: #334155;">処方箋の記載が「【般】タダラフィル錠5mg」等の一般名処方であっても、患者の病名が「前立腺肥大症」なのか「ED」なのかを必ず確認。前立腺肥大症であれば「ザルティア後発品（適応：前立腺肥大症）」を選択し、シアリス後発品を出してはならない。</p>
+        </div>
+
+        <div class="diff-card">
+          <div class="card-title-row">
+            <span class="generic-name">② 規格上限の機械的チェック</span>
+            <span class="badge badge-purple">用量監査</span>
+          </div>
+          <p style="font-size: 13.5px; color: #334155;">カンデサルタン12mgが心不全患者に出ていないか、タナトリル10mgが1型糖尿病性腎症に出ていないか。病名と規格の上限整合性をレセコン・電子薬歴で自動ブロックするフィルターを設定する。</p>
+        </div>
+
+        <div class="diff-card">
+          <div class="card-title-row">
+            <span class="generic-name">③ 自費薬の保険不正請求の徹底防止</span>
+            <span class="badge badge-danger" style="background:#fee2e2; color:#dc2626;">法的責任</span>
+          </div>
+          <p style="font-size: 13.5px; color: #334155;">「アボルブ（保険）」を薄毛（AGA）患者に安易に処方・調剤することは、詐欺罪・保険不正請求に問われる重大コンプライアンス違反。患者からの「保険で出してほしい」という要望は100%拒絶し、ザガーロ（自費）へ誘導する。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const searchInput = document.getElementById('searchInput');
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const sections = document.querySelectorAll('.content-sec');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const target = btn.getAttribute('data-target');
+
+        sections.forEach(sec => {
+          if (target === 'all' || sec.id === target) {
+            sec.style.display = 'block';
+          } else {
+            sec.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.toLowerCase().trim();
+      
+      const rows = document.querySelectorAll('tbody tr');
+      rows.forEach(tr => {
+        const text = tr.textContent.toLowerCase();
+        tr.style.display = (!q || text.includes(q)) ? '' : 'none';
+      });
+
+      const cards = document.querySelectorAll('.diff-card');
+      cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = (!q || text.includes(q)) ? '' : 'none';
+      });
+    });
+  </script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log('[PWA] ServiceWorker registered:', reg.scope))
+      .catch(err => console.log('[PWA] ServiceWorker registration failed:', err));
+  });
+}
+</script>
+
+</body>
+</html>

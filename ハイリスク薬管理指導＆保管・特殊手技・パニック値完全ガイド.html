@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <script src="auth-guard.js"></script>
+<meta charset="UTF-8">
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0284c7">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="医薬品890">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ハイリスク薬管理指導＆保管・特殊手技・パニック値完全ガイド | 医薬品840品目パッケージ</title>
+<style>
+  :root {
+    --primary: #c026d3;
+    --primary-dark: #a21caf;
+    --primary-light: #fdf4ff;
+    --danger: #dc2626;
+    --danger-light: #fef2f2;
+    --warning: #d97706;
+    --warning-light: #fffbeb;
+    --info: #0284c7;
+    --info-light: #f0f9ff;
+    --teal: #0d9488;
+    --teal-light: #f0fdfa;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", Meiryo, sans-serif;
+    background-color: var(--gray-50);
+    color: var(--gray-800);
+    line-height: 1.6;
+    padding-bottom: 80px;
+  }
+
+  /* Navigation Bar */
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 8px 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .nav-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .nav-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--gray-700);
+    background: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+  .nav-btn:hover {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border-color: var(--primary);
+  }
+  .nav-btn.active {
+    background: var(--primary);
+    color: #fff !important;
+    border-color: var(--primary) !important;
+  }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #a21caf 0%, #4338ca 100%);
+    color: #fff;
+    padding: 36px 20px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .hero-container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .hero-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  .hero p {
+    font-size: 14px;
+    opacity: 0.95;
+    max-width: 850px;
+    margin: 0 auto;
+  }
+
+  /* Main Container */
+  .container {
+    max-width: 1400px;
+    margin: 24px auto;
+    padding: 0 16px;
+  }
+
+  /* Jump Pills */
+  .jump-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 12px;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid var(--gray-200);
+  }
+  .jump-pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: var(--gray-100);
+    color: var(--gray-700);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s;
+    border: 1px solid var(--gray-300);
+  }
+  .jump-pill:hover {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+
+  /* Search */
+  .search-section {
+    background: #fff;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--gray-200);
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .search-inputs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .search-box {
+    flex: 1;
+    min-width: 250px;
+    position: relative;
+  }
+  .search-box input {
+    width: 100%;
+    padding: 10px 14px 10px 36px;
+    font-size: 14px;
+    border: 2px solid var(--gray-300);
+    border-radius: 8px;
+    outline: none;
+  }
+  .search-box input:focus { border-color: var(--primary); }
+  .search-box::before {
+    content: "🔍";
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+  }
+
+  /* Sections */
+  .content-section {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 16px 20px;
+    background: linear-gradient(to right, var(--gray-50), #fff);
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .section-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--gray-900);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-tag {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .tag-danger { background: var(--danger-light); color: var(--danger); border: 1px solid #fca5a5; }
+  .tag-warning { background: var(--warning-light); color: var(--warning); border: 1px solid #fcd34d; }
+  .tag-magenta { background: var(--primary-light); color: var(--primary-dark); border: 1px solid #f0abfc; }
+  .tag-teal { background: var(--teal-light); color: var(--teal); border: 1px solid #99f6e4; }
+
+  .section-body { padding: 20px; }
+
+  /* Cards Grid */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 16px;
+  }
+  .item-card {
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 16px;
+    background: #fff;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .item-card.border-danger { border-top: 4px solid var(--danger); }
+  .item-card.border-warning { border-top: 4px solid var(--warning); }
+  .item-card.border-magenta { border-top: 4px solid var(--primary); }
+  .item-card.border-teal { border-top: 4px solid var(--teal); }
+
+  .item-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--gray-900);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .item-desc { font-size: 12px; color: var(--gray-600); margin-bottom: 10px; }
+
+  .detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin: 8px 0;
+  }
+  .detail-table th {
+    background: var(--gray-100);
+    padding: 6px 8px;
+    text-align: left;
+    font-weight: 700;
+    color: var(--gray-700);
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .detail-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--gray-100);
+    vertical-align: top;
+  }
+
+  .alert-box {
+    background: var(--danger-light);
+    border: 1px solid #fca5a5;
+    border-radius: 6px;
+    padding: 10px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #991b1b;
+  }
+  .rule-box {
+    background: var(--warning-light);
+    border: 1px solid #fcd34d;
+    border-radius: 6px;
+    padding: 10px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #92400e;
+  }
+  .shoki-box {
+    background: var(--info-light);
+    border: 1px solid #bae6fd;
+    border-radius: 6px;
+    padding: 10px;
+    margin-top: 8px;
+    font-size: 11.5px;
+  }
+  .shoki-text {
+    font-family: monospace;
+    background: #fff;
+    padding: 6px 8px;
+    border-radius: 4px;
+    border: 1px dashed #7dd3fc;
+    margin-top: 4px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: #0f172a;
+  }
+  .copy-btn {
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    background: #fff;
+    border: 1px solid #0284c7;
+    color: #0284c7;
+    border-radius: 4px;
+    cursor: pointer;
+    float: right;
+  }
+  .copy-btn:hover { background: #0284c7; color: #fff; }
+
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: var(--gray-600);
+  }
+
+  @media (max-width: 768px) {
+    .cards-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<header class="nav-bar">
+  <div class="nav-inner">
+    <div class="nav-title">
+      <span>💊</span> 医薬品890品目 添付文書実務パッケージ
+    </div>
+    <nav class="nav-links">
+      <a href="添付文書検索ビューア.html" class="nav-btn">🔍 添付文書検索ビューア</a>
+      <a href="災害時医療・BCP＆夜間休日輪番・備蓄医薬品管理完全実務マニュアル.html" class="nav-btn">🚨 災害時医療・BCP・夜間休日</a>
+      <a href="感染症・抗ウイルス薬・抗菌薬適正使用＆パキロビッド・ゾコーバ併用禁忌完全鑑査マニュアル.html" class="nav-btn">🦠 感染症・抗ウイルス・抗菌薬</a>
+      <a href="簡易懸濁法・錠剤粉砕・脱カプセル＆経管投与（胃瘻）適否完全実務マニュアル.html" class="nav-btn">🥣 簡易懸濁・粉砕・経管投与</a>
+      <a href="吸入指導加算・自己注射・特殊デバイス実技鑑査＆指導料算定完全実務マニュアル.html" class="nav-btn">💨 吸入指導＆自己注射</a>
+      <a href="長期収載品の選定療養＆後発品変更不可・患者自己負担完全実務マニュアル.html" class="nav-btn">🏷️ 長期収載品・選定療養</a>
+      <a href="在宅訪問薬剤管理指導＆多職種連携（医師・ケアマネ報告書）完全実務マニュアル.html" class="nav-btn">🏠 在宅訪問＆多職種連携</a>
+      <a href="他科処方・広域処方鑑査＆門前外頻出薬・他院併用薬相互作用完全マニュアル.html" class="nav-btn">🏥 他科・広域処方鑑査</a>
+      <a href="薬歴記載（SOAP法）＆個別指導対策・指導料算定完全マニュアル.html" class="nav-btn">📑 薬歴SOAP＆個別指導対策</a>
+      <a href="疑義照会＆調剤過誤・ヒヤリハット防止・医療事故対策完全マニュアル.html" class="nav-btn">🚨 疑義照会＆調剤過誤防止</a>
+      <a href="高齢者・ポリファーマシー鑑査＆PTP誤飲・認知症・残薬調整完全マニュアル.html" class="nav-btn">👴 高齢者・ポリファーマシー</a>
+      <a href="妊婦・授乳婦・生殖年齢患者_添付文書禁忌＆授乳移行・胎児安全性完全マニュアル.html" class="nav-btn">🤰 妊婦・授乳婦・胎児安全性</a>
+      <a href="運転制限（禁止・注意・安全薬）＆適用上の注意・定期検査義務完全マニュアル.html" class="nav-btn">🚗 運転制限・適用注意・検査</a>
+      <a href="小児用量換算・禁忌＆透析・腎不全投与設計完全マニュアル.html" class="nav-btn">👶 小児・透析投与設計</a>
+      <a href="麻薬・覚醒剤原料・毒薬劇薬_法的適正管理＆薬事監視・事故届完全マニュアル.html" class="nav-btn">⚖️ 麻薬・法規管理</a>
+      <a href="ハイリスク薬管理指導＆保管・特殊手技・パニック値完全ガイド.html" class="nav-btn active">⚡ ハイリスク薬・特殊管理</a>
+      <a href="処方鑑査＆保険請求_実務トラップ完全総まとめガイド.html" class="nav-btn">📑 処方鑑査・実務総まとめ</a>
+      <a href="配合剤vs単剤_適応症・用量上限・第一選択制限完全ガイド.html" class="nav-btn">💊 配合剤vs単剤ガイド</a>
+      <a href="同一成分・別商品名・規格違い_適応不一致完全ガイド.html" class="nav-btn">🔀 同一成分・別適応</a>
+      <a href="支払基金審査徹底対策_返戻査定防止＆公式審査事例完全マニュアル.html" class="nav-btn">⚖️ 支払基金審査対策</a>
+      <a href="併用薬・相互作用＆用法用量影響_添付文書完全ガイド.html" class="nav-btn">🔄 併用薬・用量影響</a>
+      <a href="臨床トラップ＆ハイリスク相互作用_添付文書完全ガイド.html" class="nav-btn">⚠️ 臨床トラップ23選</a>
+      <a href="保険請求査定防止＆添付文書実務ガイド.html" class="nav-btn">🛡️ 保険請求査定防止</a>
+      <a href="適応症・効能効果_厳格審査マニュアル.html" class="nav-btn">🎯 適応症・厳格審査</a>
+      <a href="適宜増減なし医薬品一覧_厳格用量マニュアル.html" class="nav-btn">📏 適宜増減なし263</a>
+      <a href="検査値用量調整_適正使用ガイド.html" class="nav-btn">🧪 検査値用量調整</a>
+      <a href="なぜ厳しい設定があるのか_医薬品適正使用と規制の歴史・医学的理由.html" class="nav-btn">📜 規制・医学的理由</a>
+      <button onclick="pharmaLogout()" class="nav-btn" style="background:#dc2626; color:#fff; border-color:#ef4444; margin-left:auto; cursor:pointer;">🔒 ログアウト</button>
+    </nav>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-container">
+    <span class="hero-badge">薬歴管理・個別指導・安全管理 完全防衛マニュアル</span>
+    <h1>ハイリスク薬管理指導＆保管・特殊手技・パニック値 完全ガイド</h1>
+    <p>厚労省指定ハイリスク薬11群の薬歴SOAP記載要件、重篤副作用初期症状（赤旗サイン）、冷所・遮光・凍結厳禁保管、特殊デバイス（自己注射・吸入）手技、調剤即停止パニック値まで徹底網羅</p>
+  </div>
+</div>
+
+<main class="container">
+
+  <!-- Jump Navigation -->
+  <div class="jump-pills">
+    <a href="#sec-highrisk-soap" class="jump-pill">⚡ 【第1章】ハイリスク薬11群＆薬歴SOAP文例</a>
+    <a href="#sec-redflags" class="jump-pill">🚩 【第2章】重篤副作用初期症状（赤旗サイン）</a>
+    <a href="#sec-storage" class="jump-pill">❄️ 【第3章】冷所・遮光・凍結厳禁・温度逸脱</a>
+    <a href="#sec-device" class="jump-pill">💉 【第4章】特殊手技（自己注射・吸入器）</a>
+    <a href="#sec-panic" class="jump-pill">🚨 【第5章】検査値パニック値・調剤即停止基準</a>
+  </div>
+
+  <!-- Search -->
+  <div class="search-section">
+    <div class="search-inputs">
+      <div class="search-box">
+        <input type="text" id="highRiskSearch" placeholder="キーワード検索（例: DOAC, インスリン, 冷所, パニック値, 無顆粒球症, 薬歴文例）...">
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: ハイリスク薬＆薬歴SOAP -->
+  <section class="content-section" id="sec-highrisk-soap">
+    <div class="section-header">
+      <div class="section-title">
+        <span>⚡</span> 【第1章】厚労省指定ハイリスク薬（全11群）＆特定薬剤管理指導加算SOAP文例
+      </div>
+      <span class="section-tag tag-magenta">個別指導・返還金防止 S級</span>
+    </div>
+    <div class="section-body">
+      <div class="cards-grid">
+        <!-- Card 1: 血液凝固阻止剤 (DOAC/ワルファリン) -->
+        <div class="item-card border-magenta searchable-item">
+          <div class="item-title">
+            <span>血液凝固阻止剤（DOAC / ワルファリン）</span>
+            <span class="section-tag tag-magenta">ハイリスク薬</span>
+          </div>
+          <div class="item-desc">リクシアナ、イグザレルト、エリキュース、プラザキサ、ワーファリン</div>
+          <table class="detail-table">
+            <thead><tr><th>必須確認事項</th><th>確認ポイントと患者説明</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>自覚症状・出血兆候</strong></td>
+                <td>歯肉出血、皮下出血斑、血尿、黒色便（タール便）、異常な頭痛・めまい。</td>
+              </tr>
+              <tr>
+                <td><strong>服薬遵守状況</strong></td>
+                <td>DOACは半減期が短いため、飲み忘れで即座に血栓塞栓症リスク上昇。休薬時の危険。</td>
+              </tr>
+              <tr>
+                <td><strong>併用薬・他科受診</strong></td>
+                <td>NSAIDs（ロキソニン等）、抗血小板薬、P-gp阻害薬併用、歯科抜歯や内視鏡予定。</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="shoki-box">
+            <span style="font-weight:700; color:#0369a1;">📋 DOAC合格薬歴（SOAPテンプレート）</span>
+            <button class="copy-btn" onclick="copyHighRisk('soap-doac')">コピー</button>
+            <div id="soap-doac" class="shoki-text">【S】「歯磨き時に血が出ることもなく、便の色も普通です。毎日朝食後に忘れず飲んでいます」他科受診なし。
+【O】リクシアナ錠30mg 1日1回朝食後 28日分。直近eGFR 48mL/min、Hb 13.2g/dL。出血症状なし。
+【A】腎機能低下（中等度）に伴う30mg適正用量での維持良好。アドヒアランス良好で出血徴候なし。
+【P】出血症状（鼻血、黒色便、青あざ等）出現時の早期受診を指導。自己判断での休薬・増量禁止、他科受診時の本剤服用申出を再確認。</div>
+          </div>
+        </div>
+
+        <!-- Card 2: 糖尿病用薬 (インスリン/SU/SGLT2) -->
+        <div class="item-card border-magenta searchable-item">
+          <div class="item-title">
+            <span>糖尿病用薬（インスリン / SU剤 / SGLT2阻害薬）</span>
+            <span class="section-tag tag-magenta">ハイリスク薬</span>
+          </div>
+          <div class="item-desc">アマリール、グリミクロン、ジャディアンス、フォシーガ、ランタス等</div>
+          <table class="detail-table">
+            <thead><tr><th>必須確認事項</th><th>確認ポイントと患者説明</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>低血糖症状・頻度</strong></td>
+                <td>冷や汗、動悸、手指の震え、激しい空腹感、脱力感。ブドウ糖携帯の確認。</td>
+              </tr>
+              <tr>
+                <td><strong>SGLT2特有症状</strong></td>
+                <td>脱水、口渇、頻尿、尿路・性器感染症（掻痒・発赤）、正常血糖ケトアシドーシス。</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="shoki-box">
+            <span style="font-weight:700; color:#0369a1;">📋 糖尿病薬合格薬歴（SOAPテンプレート）</span>
+            <button class="copy-btn" onclick="copyHighRisk('soap-dm')">コピー</button>
+            <div id="soap-dm" class="shoki-text">【S】「冷や汗や手の震えなどの低血糖症状はありません。ブドウ糖は常にカバンに入れています」水分摂取も意識している。
+【O】ジャディアンス錠10mg、グリメピリド錠1mg。HbA1c 7.4%、eGFR 62mL/min。
+【A】SU併用下の低血糖徴候なし。ブドウ糖携帯良好。SGLT2に伴う脱水・尿路感染症状も認められず管理良好。
+【P】低血糖発現時のブドウ糖10g即時服用手順を再確認。シックデイ時（発熱・下痢・食事摂取困難時）のSGLT2・SU一時休薬ルールと主治医連絡を指導。</div>
+          </div>
+        </div>
+
+        <!-- Card 3: 精神神経用剤 (リチウム/抗精神病薬) -->
+        <div class="item-card border-magenta searchable-item">
+          <div class="item-title">
+            <span>精神神経用剤（炭酸リチウム・抗精神病薬）</span>
+            <span class="section-tag tag-magenta">TDM・中毒注意</span>
+          </div>
+          <div class="item-desc">リーマス、セレネース、ジプレキサ、リスパダール等</div>
+          <table class="detail-table">
+            <thead><tr><th>必須確認事項</th><th>確認ポイントと患者説明</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>リチウム中毒初期症状</strong></td>
+                <td>手指の微細な震え、嘔気・下痢、ろれつが回らない、運動失調、強い倦怠感。</td>
+              </tr>
+              <tr>
+                <td><strong>血中濃度測定歴</strong></td>
+                <td>有効血中濃度（0.6〜1.2 mEq/L）の維持確認。1.5以上で中毒域。定期採血の確認。</td>
+              </tr>
+              <tr>
+                <td><strong>NSAIDs併用禁止</strong></td>
+                <td>ロキソニン等の併用でリチウム排泄低下・血中濃度急上昇中毒（市販薬含め注意）。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Card 4: 抗不整脈薬・ジギタリス製剤 -->
+        <div class="item-card border-magenta searchable-item">
+          <div class="item-title">
+            <span>抗不整脈用剤・ジギタリス製剤</span>
+            <span class="section-tag tag-magenta">致死性不整脈</span>
+          </div>
+          <div class="item-desc">サンリズム、タンボコール、アンカロン、ジゴシン等</div>
+          <table class="detail-table">
+            <thead><tr><th>必須確認事項</th><th>確認ポイントと患者説明</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>ジギタリス中毒症状</strong></td>
+                <td>悪心・食欲不振、黄視症・緑視症（物が黄色く見える）、脈拍異常（徐脈・結滞）。</td>
+              </tr>
+              <tr>
+                <td><strong>電解質・低カリウム</strong></td>
+                <td>利尿薬併用時の低K血症でジギタリス中毒激化。定期心電図・採血確認。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: 副作用初期症状（赤旗サイン） -->
+  <section class="content-section" id="sec-redflags">
+    <div class="section-header">
+      <div class="section-title">
+        <span>🚩</span> 【第2章】患者に説明すべき「重篤副作用の初期症状（赤旗サイン）」完全一覧
+      </div>
+      <span class="section-tag tag-danger">救命・早期発見</span>
+    </div>
+    <div class="section-body">
+      <table class="detail-table">
+        <thead>
+          <tr style="background:#fef2f2;">
+            <th style="width:22%;">重篤副作用名</th>
+            <th style="width:28%;">主な原因医薬品</th>
+            <th style="width:50%;">患者に必ず伝えるべき初期症状（赤旗サイン）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>無顆粒球症</strong></td>
+            <td>チアマゾール、カルバマゼピン、クロザピン、メチマゾール</td>
+            <td><strong>突然の38℃以上の高熱、喉の激しい痛み、寒気</strong>。風邪薬を飲んで様子を見ず、直ちに受診・血液検査が必要。</td>
+          </tr>
+          <tr>
+            <td><strong>スティーブンス・ジョンソン症候群 (SJS/TEN)</strong></td>
+            <td>アロプリノール、カルバマゼピン、ラモトリギン、NSAIDs、抗菌薬</td>
+            <td><strong>高熱、口唇・舌のただれ、目の充血・目やに、全身の赤い斑点・水ぶくれ</strong>。皮膚科または救急受診。</td>
+          </tr>
+          <tr>
+            <td><strong>横紋筋融解症</strong></td>
+            <td>スタチン系、フィブラート系、キノロン系抗菌薬</td>
+            <td><strong>手足の脱力感、激しい筋肉痛・こむら返り、尿の色が赤褐色（コーラ色）になる</strong>。</td>
+          </tr>
+          <tr>
+            <td><strong>間質性肺炎</strong></td>
+            <td>分子標的薬、ゲフィチニブ、メトトレキサート、アミオダロン</td>
+            <td><strong>痰を伴わない乾いた咳（から咳）、階段昇降時の急激な息切れ・息苦しさ、発熱</strong>。</td>
+          </tr>
+          <tr>
+            <td><strong>アナフィラキシー</strong></td>
+            <td>ペニシリン系抗菌薬、造影剤、NSAIDs、生物学的製剤</td>
+            <td><strong>服用・投与後数分〜30分以内の全身掻痒・じんましん、冷や汗、口唇の腫れ、呼吸困難・ゼーゼー音</strong>。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SECTION 3: 冷所・遮光・凍結厳禁 -->
+  <section class="content-section" id="sec-storage">
+    <div class="section-header">
+      <div class="section-title">
+        <span>❄️</span> 【第3章】冷所保存（2〜8℃）・遮光・凍結厳禁＆温度逸脱ルール
+      </div>
+      <span class="section-tag tag-teal">品質管理・薬効消失防止</span>
+    </div>
+    <div class="section-body">
+      <div class="cards-grid">
+        <!-- Card 1: 冷所・凍結厳禁 -->
+        <div class="item-card border-teal searchable-item">
+          <div class="item-title">
+            <span>冷所保存（2〜8℃）＆凍結厳禁医薬品</span>
+            <span class="section-tag tag-danger">凍結で失活！</span>
+          </div>
+          <div class="item-desc">冷蔵庫の冷気吹き出し口付近・チルド室保管による凍結失活に厳重注意</div>
+          <table class="detail-table">
+            <thead><tr><th>薬剤群・製品名</th><th>使用前保管</th><th>使用中（開封後）の保管ルール</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>インスリン製剤</strong><br>(ランタス、ノボラピッド等)</td>
+                <td>冷所 (2〜8℃)<br><strong>凍結絶対厳禁</strong></td>
+                <td><strong>室温保管（直射日光・高温を避ける）</strong>。開封後28日〜56日（製剤規定日数）で廃棄。※冷蔵庫に戻すと結露・針詰まり。</td>
+              </tr>
+              <tr>
+                <td><strong>GLP-1受容体作動薬</strong><br>(マンジャロ、オゼンピック等)</td>
+                <td>冷所 (2〜8℃)<br>凍結厳禁</td>
+                <td>マンジャロは室温21日以内、オゼンピックは室温56日以内など銘柄厳守。</td>
+              </tr>
+              <tr>
+                <td><strong>冷所点眼液</strong><br>(エイベリス、ザラカム等)</td>
+                <td>冷所 (2〜8℃)</td>
+                <td>エイベリスは開封後も冷所密栓。ザラカム等は開封後室温可（1ヶ月）。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Card 2: 遮光保存 -->
+        <div class="item-card border-teal searchable-item">
+          <div class="item-title">
+            <span>遮光保存（光分解）医薬品</span>
+            <span class="section-tag tag-warning">褐色瓶・アルミ袋保管</span>
+          </div>
+          <div class="item-desc">光による主薬分解・変色・力価低下</div>
+          <ul style="font-size:12px; line-height:1.8; padding-left:18px;">
+            <li><strong>ニトログリセリン錠/舌下錠:</strong> 遮光密栓。揮発性および光分解性があるためPTPのまま携帯、ケースから出さない。</li>
+            <li><strong>アムロジピンOD錠:</strong> 光により徐々に着色・分解（遮光PTPシートのまま保管）。</li>
+            <li><strong>フロセミド錠:</strong> 光により退色・分解（遮光保存）。</li>
+            <li><strong>ビタミンB群製剤（シアノコバラミン・メコバラミン等）:</strong> 光分解を受けやすいため遮光袋交付。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: 特殊デバイス手技 -->
+  <section class="content-section" id="sec-device">
+    <div class="section-header">
+      <div class="section-title">
+        <span>💉</span> 【第4章】特殊デバイス（自己注射・吸入器）手技指導チェックシート
+      </div>
+      <span class="section-tag tag-magenta">手技ミス防止</span>
+    </div>
+    <div class="section-body">
+      <div class="cards-grid">
+        <div class="item-card border-magenta searchable-item">
+          <div class="item-title">
+            <span>ペン型自己注射の手技 5大原則</span>
+            <span class="section-tag tag-magenta">投与量不足防止</span>
+          </div>
+          <div class="item-desc">インスリン・GLP-1製剤の確実な皮下注射</div>
+          <ul style="font-size:12px; line-height:1.8; padding-left:18px;">
+            <li>① <strong>空打ち（2単位）の実施:</strong> 針の開通と気泡除去を確認（液滴が出るまで）。</li>
+            <li>② <strong>針の毎回交換:</strong> 使い回しは針先変形による組織損傷・感染・液漏れの原因。</li>
+            <li>③ <strong>腹部注射部位のローテーション:</strong> 同一部位への連打はインスリンボール（リポハイパートロフィー：皮下脂肪増殖）を招き、吸収不良を起こす。前回より2〜3cmずらす。</li>
+            <li>④ <strong>ボタン押し込み後10秒カウント:</strong> 注入直後に抜くと薬液が逆流・漏出。針を刺したまま10秒待ってから抜去。</li>
+            <li>⑤ <strong>使用済み針の安全廃棄:</strong> ペットボトルや専用容器に入れ、薬局・医療機関へ持参廃棄（一般ゴミ厳禁）。</li>
+          </ul>
+        </div>
+
+        <div class="item-card border-magenta searchable-item">
+          <div class="item-title">
+            <span>吸入器（DPI vs pMDI vs SMI）手技</span>
+            <span class="section-tag tag-magenta">肺内送達・口腔カンジダ防止</span>
+          </div>
+          <div class="item-desc">吸入力に応じたデバイス特性の使い分け</div>
+          <table class="detail-table">
+            <thead><tr><th>デバイス種類</th><th>代表薬</th><th>吸入速度と手技の肝</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>DPI (ドライパウダー)</strong><br>エリプタ / タービュヘイラー</td>
+                <td>レルベア / シムビコート</td>
+                <td>自力で<strong>「深く、強く、素早く」</strong>吸い込む（吸入力が必要）。呼気を吹き込むと湿気で粉末固着。</td>
+              </tr>
+              <tr>
+                <td><strong>pMDI (エアゾール)</strong><br>フルティフォーム等</td>
+                <td>フルティフォーム</td>
+                <td>噴霧と同時に<strong>「ゆっくり、深く」</strong>吸い込む。同調が困難な場合はスペーサー使用。</td>
+              </tr>
+              <tr>
+                <td><strong>SMI (ソフトミスト)</strong><br>レスピマット</td>
+                <td>スピリーバ / スピオルド</td>
+                <td>噴霧速度が遅いため、高齢者でも<strong>「ゆっくり深く」</strong>吸入可能。</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="rule-box">
+            <strong>必須指導:</strong> ステロイド含有吸入器（ICS）使用後は、<strong>必ず「うがい（含嗽）」を行う</strong>こと（口腔内カンジダ症・嗄声・咽頭刺激防止）。うがいができない場合は飲水やうがい液吐き出し。
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: パニック値・即時疑義照会 -->
+  <section class="content-section" id="sec-panic">
+    <div class="section-header">
+      <div class="section-title">
+        <span>🚨</span> 【第5章】検査値パニック値・調剤即停止＆即時疑義照会クライテリア
+      </div>
+      <span class="section-tag tag-danger">重大医療事故防止・緊急レッドフラグ</span>
+    </div>
+    <div class="section-body">
+      <div class="alert-box" style="margin-bottom:16px;">
+        <strong>⚠️ パニック値（Panic Value）の定義:</strong> 放置すると数時間〜数日以内に致死的な転帰をたどる極めて危険な検査値。薬局でこの数値を認めた場合、調剤を即座に保留・中断し、処方医へ電話にて緊急疑義照会・受診勧奨を行う義務があります。
+      </div>
+
+      <table class="detail-table">
+        <thead>
+          <tr style="background:#fef2f2;">
+            <th style="width:20%;">検査項目</th>
+            <th style="width:25%;">調剤即停止パニック値</th>
+            <th style="width:55%;">危険な薬剤・発症する致死リスク・緊急対応</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>血清カリウム (K)</strong></td>
+            <td><strong>6.0 mEq/L 以上</strong><br>(高カリウム血症)</td>
+            <td><strong>【危険薬】ACE阻害薬、ARB、スピロノラクトン、カリウム製剤</strong><br>➜ 致死性不整脈（心室細動・心停止）。即座にカリウム昇圧系薬剤の中止疑義照会。心電図検査勧奨。</td>
+          </tr>
+          <tr>
+            <td><strong>血清カリウム (K)</strong></td>
+            <td><strong>2.8 mEq/L 未満</strong><br>(低カリウム血症)</td>
+            <td><strong>【危険薬】ループ利尿薬、チアジド系、漢方製剤（甘草重複）、ジギタリス</strong><br>➜ Torsades de Pointes (TdP) 致死性不整脈、ジギタリス中毒激化、四肢麻痺。</td>
+          </tr>
+          <tr>
+            <td><strong>腎機能 (eGFR)</strong></td>
+            <td><strong>15 mL/min/1.73m² 未満</strong><br>(末期腎不全・G5)</td>
+            <td><strong>【危険薬】メトホルミン（絶対禁忌・乳酸アシドーシス）、DOAC（全種禁忌）、ガバペンチン</strong><br>➜ 即時調剤ストップ。透析導入域であり、減量されていない腎排泄型薬物は中毒死リスク。</td>
+          </tr>
+          <tr>
+            <td><strong>白血球数 (WBC)</strong></td>
+            <td><strong>2,000 /μL 未満</strong><br>(好中球 500未満)</td>
+            <td><strong>【危険薬】チアマゾール、抗がん剤、免疫抑制剤、カルバマゼピン</strong><br>➜ 無顆粒球症・日和見感染敗血症ショック。即座に休薬疑義照会・救急受診。</td>
+          </tr>
+          <tr>
+            <td><strong>血小板数 (PLT)</strong></td>
+            <td><strong>5.0 万 /μL 未満</strong></td>
+            <td><strong>【危険薬】抗凝固薬（DOAC/ワルファリン）、抗血小板薬</strong><br>➜ 頭蓋内出血、消化管大量出血。血小板輸血考慮レベル。休薬照会。</td>
+          </tr>
+          <tr>
+            <td><strong>PT-INR</strong></td>
+            <td><strong>3.5 以上</strong><br>(目標域 1.6〜2.6)</td>
+            <td><strong>【危険薬】ワルファリン（ワーファリン）</strong><br>➜ 脳出血・大出血リスク急上昇。ワルファリン休薬・減量疑義照会（ビタミンK投与検討）。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  医薬品840品目 添付文書実務パッケージ | ハイリスク薬管理指導＆保管・特殊手技・パニック値 完全ガイド<br>
+  ※本ツールは日本病院薬剤師会ハイリスク薬管理指導基準及び臨床検査パニック値基準に基づき作成されています。
+</footer>
+
+<script>
+// Search function
+const searchInput = document.getElementById('highRiskSearch');
+const items = document.querySelectorAll('.searchable-item');
+
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.toLowerCase().trim();
+  items.forEach(card => {
+    const text = card.innerText.toLowerCase();
+    if (!query || text.includes(query)) {
+      card.style.display = 'flex';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+});
+
+// Copy snippet
+function copyHighRisk(id) {
+  const text = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('薬歴SOAPテンプレートをクリップボードにコピーしました！\n電子薬歴に貼り付けてご活用いただけます。');
+  }).catch(err => {
+    console.error('Copy failed: ', err);
+  });
+}
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log('[PWA] ServiceWorker registered:', reg.scope))
+      .catch(err => console.log('[PWA] ServiceWorker registration failed:', err));
+  });
+}
+</script>
+
+</body>
+</html>

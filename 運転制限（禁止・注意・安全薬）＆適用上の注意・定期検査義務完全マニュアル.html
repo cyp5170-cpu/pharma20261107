@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <script src="auth-guard.js"></script>
+<meta charset="UTF-8">
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0284c7">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="医薬品890">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>運転制限（禁止・注意・安全薬）＆適用上の注意・定期検査義務 完全マニュアル | 医薬品840品目パッケージ</title>
+<style>
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --primary-light: #eff6ff;
+    --danger: #dc2626;
+    --danger-light: #fef2f2;
+    --warning: #d97706;
+    --warning-light: #fffbeb;
+    --success: #16a34a;
+    --success-light: #f0fdf4;
+    --purple: #7c3aed;
+    --purple-light: #faf5ff;
+    --teal: #0d9488;
+    --teal-light: #f0fdfa;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", Meiryo, sans-serif;
+    background-color: var(--gray-50);
+    color: var(--gray-800);
+    line-height: 1.6;
+    padding-bottom: 80px;
+  }
+
+  /* Navigation Bar */
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 8px 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .nav-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .nav-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+  }
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 6px;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--gray-700);
+    background: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+  .nav-btn:hover {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border-color: var(--primary);
+  }
+  .nav-btn.active {
+    background: var(--primary);
+    color: #fff !important;
+    border-color: var(--primary) !important;
+  }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #1d4ed8 0%, #0369a1 100%);
+    color: #fff;
+    padding: 36px 20px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .hero-container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .hero-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-size: 25px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  .hero p {
+    font-size: 14px;
+    opacity: 0.95;
+    max-width: 850px;
+    margin: 0 auto;
+  }
+
+  /* Main Container */
+  .container {
+    max-width: 1400px;
+    margin: 24px auto;
+    padding: 0 16px;
+  }
+
+  /* Jump Pills */
+  .jump-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 12px;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid var(--gray-200);
+  }
+  .jump-pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: var(--gray-100);
+    color: var(--gray-700);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s;
+    border: 1px solid var(--gray-300);
+  }
+  .jump-pill:hover {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+
+  /* Search */
+  .search-section {
+    background: #fff;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--gray-200);
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .search-inputs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .search-box {
+    flex: 1;
+    min-width: 250px;
+    position: relative;
+  }
+  .search-box input {
+    width: 100%;
+    padding: 10px 14px 10px 36px;
+    font-size: 14px;
+    border: 2px solid var(--gray-300);
+    border-radius: 8px;
+    outline: none;
+  }
+  .search-box input:focus { border-color: var(--primary); }
+  .search-box::before {
+    content: "🔍";
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+  }
+
+  /* Sections */
+  .content-section {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 16px 20px;
+    background: linear-gradient(to right, var(--gray-50), #fff);
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .section-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--gray-900);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-tag {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .tag-danger { background: var(--danger-light); color: var(--danger); border: 1px solid #fca5a5; }
+  .tag-warning { background: var(--warning-light); color: var(--warning); border: 1px solid #fcd34d; }
+  .tag-success { background: var(--success-light); color: var(--success); border: 1px solid #86efac; }
+  .tag-blue { background: var(--primary-light); color: var(--primary); border: 1px solid #93c5fd; }
+
+  .section-body { padding: 20px; }
+
+  /* Cards Grid */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 16px;
+  }
+  .drive-card {
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 16px;
+    background: #fff;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .drive-card.border-danger { border-top: 4px solid var(--danger); }
+  .drive-card.border-warning { border-top: 4px solid var(--warning); }
+  .drive-card.border-success { border-top: 4px solid var(--success); }
+  .drive-card.border-blue { border-top: 4px solid var(--primary); }
+
+  .drive-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--gray-900);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .drive-desc { font-size: 12px; color: var(--gray-600); margin-bottom: 10px; }
+
+  .detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin: 8px 0;
+  }
+  .detail-table th {
+    background: var(--gray-100);
+    padding: 6px 8px;
+    text-align: left;
+    font-weight: 700;
+    color: var(--gray-700);
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .detail-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--gray-100);
+    vertical-align: top;
+  }
+
+  .alert-box {
+    background: var(--danger-light);
+    border: 1px solid #fca5a5;
+    border-radius: 6px;
+    padding: 10px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #991b1b;
+  }
+  .safe-box {
+    background: var(--success-light);
+    border: 1px solid #86efac;
+    border-radius: 6px;
+    padding: 10px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #166534;
+  }
+
+  .talk-box {
+    background: var(--primary-light);
+    border: 1px solid #93c5fd;
+    border-radius: 6px;
+    padding: 10px;
+    margin-top: 8px;
+    font-size: 11.5px;
+  }
+  .talk-text {
+    font-family: monospace;
+    background: #fff;
+    padding: 6px 8px;
+    border-radius: 4px;
+    border: 1px dashed #60a5fa;
+    margin-top: 4px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: #0f172a;
+  }
+  .copy-btn {
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    background: #fff;
+    border: 1px solid #2563eb;
+    color: #2563eb;
+    border-radius: 4px;
+    cursor: pointer;
+    float: right;
+  }
+  .copy-btn:hover { background: #2563eb; color: #fff; }
+
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: var(--gray-600);
+  }
+
+  @media (max-width: 768px) {
+    .cards-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<header class="nav-bar">
+  <div class="nav-inner">
+    <div class="nav-title">
+      <span>💊</span> 医薬品890品目 添付文書実務パッケージ
+    </div>
+    <nav class="nav-links">
+      <a href="添付文書検索ビューア.html" class="nav-btn">🔍 添付文書検索ビューア</a>
+      <a href="災害時医療・BCP＆夜間休日輪番・備蓄医薬品管理完全実務マニュアル.html" class="nav-btn">🚨 災害時医療・BCP・夜間休日</a>
+      <a href="感染症・抗ウイルス薬・抗菌薬適正使用＆パキロビッド・ゾコーバ併用禁忌完全鑑査マニュアル.html" class="nav-btn">🦠 感染症・抗ウイルス・抗菌薬</a>
+      <a href="簡易懸濁法・錠剤粉砕・脱カプセル＆経管投与（胃瘻）適否完全実務マニュアル.html" class="nav-btn">🥣 簡易懸濁・粉砕・経管投与</a>
+      <a href="吸入指導加算・自己注射・特殊デバイス実技鑑査＆指導料算定完全実務マニュアル.html" class="nav-btn">💨 吸入指導＆自己注射</a>
+      <a href="長期収載品の選定療養＆後発品変更不可・患者自己負担完全実務マニュアル.html" class="nav-btn">🏷️ 長期収載品・選定療養</a>
+      <a href="在宅訪問薬剤管理指導＆多職種連携（医師・ケアマネ報告書）完全実務マニュアル.html" class="nav-btn">🏠 在宅訪問＆多職種連携</a>
+      <a href="他科処方・広域処方鑑査＆門前外頻出薬・他院併用薬相互作用完全マニュアル.html" class="nav-btn">🏥 他科・広域処方鑑査</a>
+      <a href="薬歴記載（SOAP法）＆個別指導対策・指導料算定完全マニュアル.html" class="nav-btn">📑 薬歴SOAP＆個別指導対策</a>
+      <a href="疑義照会＆調剤過誤・ヒヤリハット防止・医療事故対策完全マニュアル.html" class="nav-btn">🚨 疑義照会＆調剤過誤防止</a>
+      <a href="高齢者・ポリファーマシー鑑査＆PTP誤飲・認知症・残薬調整完全マニュアル.html" class="nav-btn">👴 高齢者・ポリファーマシー</a>
+      <a href="妊婦・授乳婦・生殖年齢患者_添付文書禁忌＆授乳移行・胎児安全性完全マニュアル.html" class="nav-btn">🤰 妊婦・授乳婦・胎児安全性</a>
+      <a href="運転制限（禁止・注意・安全薬）＆適用上の注意・定期検査義務完全マニュアル.html" class="nav-btn active">🚗 運転制限・適用注意・検査</a>
+      <a href="小児用量換算・禁忌＆透析・腎不全投与設計完全マニュアル.html" class="nav-btn">👶 小児・透析投与設計</a>
+      <a href="麻薬・覚醒剤原料・毒薬劇薬_法的適正管理＆薬事監視・事故届完全マニュアル.html" class="nav-btn">⚖️ 麻薬・法規管理</a>
+      <a href="ハイリスク薬管理指導＆保管・特殊手技・パニック値完全ガイド.html" class="nav-btn">⚡ ハイリスク薬・特殊管理</a>
+      <a href="処方鑑査＆保険請求_実務トラップ完全総まとめガイド.html" class="nav-btn">📑 処方鑑査・実務総まとめ</a>
+      <a href="配合剤vs単剤_適応症・用量上限・第一選択制限完全ガイド.html" class="nav-btn">💊 配合剤vs単剤ガイド</a>
+      <a href="同一成分・別商品名・規格違い_適応不一致完全ガイド.html" class="nav-btn">🔀 同一成分・別適応</a>
+      <a href="支払基金審査徹底対策_返戻査定防止＆公式審査事例完全マニュアル.html" class="nav-btn">⚖️ 支払基金審査対策</a>
+      <a href="併用薬・相互作用＆用法用量影響_添付文書完全ガイド.html" class="nav-btn">🔄 併用薬・用量影響</a>
+      <a href="臨床トラップ＆ハイリスク相互作用_添付文書完全ガイド.html" class="nav-btn">⚠️ 臨床トラップ23選</a>
+      <a href="保険請求査定防止＆添付文書実務ガイド.html" class="nav-btn">🛡️ 保険請求査定防止</a>
+      <a href="適応症・効能効果_厳格審査マニュアル.html" class="nav-btn">🎯 適応症・厳格審査</a>
+      <a href="適宜増減なし医薬品一覧_厳格用量マニュアル.html" class="nav-btn">📏 適宜増減なし263</a>
+      <a href="検査値用量調整_適正使用ガイド.html" class="nav-btn">🧪 検査値用量調整</a>
+      <a href="なぜ厳しい設定があるのか_医薬品適正使用と規制の歴史・医学的理由.html" class="nav-btn">📜 規制・医学的理由</a>
+      <button onclick="pharmaLogout()" class="nav-btn" style="background:#dc2626; color:#fff; border-color:#ef4444; margin-left:auto; cursor:pointer;">🔒 ログアウト</button>
+    </nav>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-container">
+    <span class="hero-badge">損害賠償判例・事故防止・法的義務 完全対応</span>
+    <h1>運転制限＆適用上の注意・定期検査義務 完全マニュアル</h1>
+    <p>自動車運転制限3段階（運転禁止 vs 運転注意 vs ドライバー安全薬）、PTP誤飲死防止、ゴーストピル、ビスホスホネート噛み砕き潰瘍、チアマゾール2週採血義務まで徹底網羅</p>
+  </div>
+</div>
+
+<main class="container">
+
+  <!-- Jump Navigation -->
+  <div class="jump-pills">
+    <a href="#sec-driving-levels" class="jump-pill">🚗 【第1章】自動車運転制限 3段階完全マトリクス</a>
+    <a href="#sec-application-traps" class="jump-pill">💊 【第2章】項目14「適用上の注意」特殊服用ルール</a>
+    <a href="#sec-mandatory-labs" class="jump-pill">🩺 【第3章】項目8「定期的な臨床検査」義務付け医薬品</a>
+    <a href="#sec-talk-scripts" class="jump-pill">🗣️ 【第4章】窓口服薬指導トークスクリプト集</a>
+  </div>
+
+  <!-- Search -->
+  <div class="search-section">
+    <div class="search-inputs">
+      <div class="search-box">
+        <input type="text" id="driveSearch" placeholder="キーワード検索（例: 運転禁止, アレグラ, ゴーストピル, PTP誤飲, メルカゾール2週）...">
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: 運転制限3段階 -->
+  <section class="content-section" id="sec-driving-levels">
+    <div class="section-header">
+      <div class="section-title">
+        <span>🚗</span> 【第1章】自動車運転制限 3段階完全マトリクス（法的責任・判例対策）
+      </div>
+      <span class="section-tag tag-danger">説明義務違反・民事訴訟リスク S級</span>
+    </div>
+    <div class="section-body">
+      <div class="alert-box" style="margin-bottom:16px;">
+        <strong>⚠️ 判例注意:</strong> 運転禁止薬を患者に説明せず交付し、患者が運転事故を起こした場合、**医師・薬剤師の重大な説明義務違反（民事損害賠償・過失責任）**が認定された判例があります。「気をつけて運転して」という指導は添付文書違反となります。
+      </div>
+
+      <div class="cards-grid">
+        <!-- Level 1: 運転絶対禁止 -->
+        <div class="drive-card border-danger searchable-card">
+          <div class="drive-title">
+            <span>レベル①【運転絶対禁止】</span>
+            <span class="section-tag tag-danger">完全禁止</span>
+          </div>
+          <div class="drive-desc">「自動車の運転等危険を伴う機械の操作に従事させないこと」</div>
+          <table class="detail-table">
+            <thead><tr><th>薬効分類</th><th>該当医薬品（代表例）</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>睡眠薬・抗不安薬</strong></td>
+                <td>ハルシオン、マイスリー、デパス、ワイパックス、ソラナックス等全般</td>
+              </tr>
+              <tr>
+                <td><strong>抗ヒスタミン薬<br>(第1世代・一部第2世代)</strong></td>
+                <td>ポララミン、アレロック（オロパタジン）、ザイザル（レボセチリジン）、タリオン（ベポタスチン）、セレスタミン</td>
+              </tr>
+              <tr>
+                <td><strong>疼痛治療薬</strong></td>
+                <td>トラムセット配合錠、リリカ（プレガバリン）、トラマール</td>
+              </tr>
+              <tr>
+                <td><strong>抗うつ薬・抗てんかん薬</strong></td>
+                <td>サインバルタ、ジェイゾロフト、テグレトール、デパケン</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="alert-box">
+            <strong>指導上の鉄則:</strong> 「服用中は絶対に自動車やバイクの運転をしないでください」と明確に禁止を告げること。
+          </div>
+        </div>
+
+        <!-- Level 2: 運転注意 -->
+        <div class="drive-card border-warning searchable-card">
+          <div class="drive-title">
+            <span>レベル②【運転注意（原則回避）】</span>
+            <span class="section-tag tag-warning">強い注意</span>
+          </div>
+          <div class="drive-desc">「自動車の運転等危険を伴う機械の操作に従事させないよう注意すること」</div>
+          <table class="detail-table">
+            <thead><tr><th>薬効分類</th><th>該当医薬品（代表例）</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>一部の第2世代抗ヒスタミン薬</strong></td>
+                <td>アレジオン（エピナスチン）、エバステル（エバスチン）</td>
+              </tr>
+              <tr>
+                <td><strong>降圧薬（めまい・立ちくらみ）</strong></td>
+                <td>アムロジピン、オルメサルタン、カンデサルタン等の降圧薬全般</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Level 3: 運転可能（安全薬） -->
+        <div class="drive-card border-success searchable-card">
+          <div class="drive-title">
+            <span>レベル③【運転可能・ドライバー安全薬】</span>
+            <span class="section-tag tag-success">職業ドライバー推奨</span>
+          </div>
+          <div class="drive-desc">添付文書に自動車運転制限・眠気の注意書きが一切ない薬剤</div>
+          <table class="detail-table">
+            <thead><tr><th>成分名・商品名</th><th>特徴と臨床鑑査ルール</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>アレグラ<br>(フェキソフェナジン)</strong></td>
+                <td>脳内ヒスタミンH1受容体占拠率がほぼ0%（非鎮静性）。職業ドライバー（タクシー、トラック、バス運転手）の第一選択。</td>
+              </tr>
+              <tr>
+                <td><strong>クラリチン<br>(ロラタジン)</strong></td>
+                <td>1日1回服用で運転制限なし。眠気が極めて生じにくい。</td>
+              </tr>
+              <tr>
+                <td><strong>デザレックス<br>(デスロラタジン)</strong></td>
+                <td>クラリチンの活性代謝物。1日1回、運転制限の記載なし。</td>
+              </tr>
+              <tr>
+                <td><strong>ビラノア<br>(ビラスチン)</strong></td>
+                <td>空腹時服用必須だが、速効性・高力価かつ運転制限の記載なし。</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="safe-box">
+            <strong>鑑査の決め手:</strong> 職業ドライバーに「アレロック」や「ザイザル」が出ていた場合、直ちに医師へ疑義照会し、アレグラやビラノアへの変更を提案する。
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: 適用上の注意 -->
+  <section class="content-section" id="sec-application-traps">
+    <div class="section-header">
+      <div class="section-title">
+        <span>💊</span> 【第2章】項目14「適用上の注意」見落とし厳禁の特殊服用ルール
+      </div>
+      <span class="section-tag tag-danger">誤飲死・粘膜腐食防止</span>
+    </div>
+    <div class="section-body">
+      <div class="cards-grid">
+        <!-- PTP誤飲 -->
+        <div class="drive-card border-danger searchable-card">
+          <div class="drive-title">
+            <span>PTPシート誤飲防止（食道穿孔・大動脈破裂死）</span>
+            <span class="section-tag tag-danger">医療事故年間多発</span>
+          </div>
+          <div class="drive-desc">添付文書14.1 薬剤交付時の絶対義務</div>
+          <p style="font-size:12px; line-height:1.7;">
+            高齢者が1錠ずつハサミで切り離されたPTPシートを、薬を取り出さずにそのまま丸呑みする事故が後を絶ちません。アルミシートの鋭利な角が食道壁を貫通し、<strong>縦隔洞炎や隣接する大動脈穿孔による大出血死</strong>を引き起こします。<br>
+            <strong>指導原則:</strong> 「1錠ずつハサミで切り離さず、必ず2錠単位で保管し、飲む直前に押し出して指でつまんで飲む」ことを徹底指導。
+          </p>
+        </div>
+
+        <!-- ゴーストピル -->
+        <div class="drive-card border-warning searchable-card">
+          <div class="drive-title">
+            <span>ゴーストピル（白い抜け殻の便中排泄）</span>
+            <span class="section-tag tag-warning">クレーム防止</span>
+          </div>
+          <div class="drive-desc">不溶性高分子マトリクス製剤の特性</div>
+          <table class="detail-table">
+            <thead><tr><th>代表薬剤</th><th>アダラートCR、バイロテン、コンサータ</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>現象と機序</strong></td>
+                <td>有効成分のみが腸管内で徐放・吸収され、薬の骨格（白い抜け殻）がそのまま便中に排泄される。</td>
+              </tr>
+              <tr>
+                <td><strong>事前説明がないと</strong></td>
+                <td>「薬が全く溶けずにウンチに出た！効いていない！」と激しい不安・服薬中断・窓口クレームに直結。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ビスホスホネート噛み砕き潰瘍 -->
+        <div class="drive-card border-danger searchable-card">
+          <div class="drive-title">
+            <span>ビスホスホネート錠の噛み砕き・口中溶解禁止</span>
+            <span class="section-tag tag-danger">口腔・食道潰瘍</span>
+          </div>
+          <div class="drive-desc">ボナロン、フォサマック、アクトネル、ベネット</div>
+          <p style="font-size:12px; line-height:1.7;">
+            有効成分のアレンドロン酸・リセドロン酸は強力な局所粘膜刺激作用を持ちます。噛み砕いたり口の中で溶かすと、<strong>口腔内粘膜の広範な潰瘍や重篤な咽頭食道腐食</strong>を引き起こします。<br>
+            <strong>指導原則:</strong> 水約180mL以上で丸呑みし、服用後30分間は横にならない（逆流防止）。
+          </p>
+        </div>
+
+        <!-- OD錠の誤認 -->
+        <div class="drive-card border-blue searchable-card">
+          <div class="drive-title">
+            <span>OD錠（口腔内崩壊錠）の「寝たまま唾液放置」禁止</span>
+            <span class="section-tag tag-blue">食道粘膜刺激</span>
+          </div>
+          <div class="drive-desc">水なしで飲めることの盲点</div>
+          <p style="font-size:12px; line-height:1.7;">
+            OD錠は唾液で速やかに崩壊しますが、<strong>「寝たまま水なしで唾液だけで放置」すると、溶けた高濃度薬液が食道粘膜に停滞して食道潰瘍</strong>を惹起します。<br>
+            <strong>指導原則:</strong> 水なしで飲む場合でも必ず体を起こし、崩壊後は唾液とともに完全に飲み下すこと。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: 定期検査義務 -->
+  <section class="content-section" id="sec-mandatory-labs">
+    <div class="section-header">
+      <div class="section-title">
+        <span>🩺</span> 【第3章】項目8「重要な基本的注意」定期的な臨床検査が義務付けられている医薬品
+      </div>
+      <span class="section-tag tag-danger">漫然投与による副作用死防止</span>
+    </div>
+    <div class="section-body">
+      <table class="detail-table">
+        <thead>
+          <tr style="background:#fef2f2;">
+            <th style="width:25%;">医薬品名</th>
+            <th style="width:30%;">義務付けられている検査頻度・項目</th>
+            <th style="width:45%;">重篤副作用と検査未実施時の医療過誤責任</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>チアマゾール<br>(メルカゾール)</strong></td>
+            <td><strong>投与開始後2〜3ヶ月間は、原則「2週に1回」の血算・白血球分画検査</strong></td>
+            <td><strong>【無顆粒球症（致死率高）】</strong><br>初期の採血なし漫然処方で無顆粒球症死した場合、医師・薬剤師の過失が厳しく追及される。</td>
+          </tr>
+          <tr>
+            <td><strong>メトトレキサート<br>(リウマトレックス)</strong></td>
+            <td><strong>4週に1回程度の肝機能・腎機能・血算検査</strong>、定期胸部X線</td>
+            <td><strong>【骨髄抑制、間質性肺炎、重篤感染症】</strong><br>腎機能悪化に伴うMTX体内蓄積中毒死を未然に防止。</td>
+          </tr>
+          <tr>
+            <td><strong>炭酸リチウム<br>(リーマス)</strong></td>
+            <td><strong>定期的な血中濃度測定（TDM）</strong><br>(維持域: 0.6〜1.2 mEq/L、1.5以上で中毒)</td>
+            <td><strong>【リチウム中毒（運動失調、せん妄、不可逆性脳障害）】</strong><br>定期採血を行わない漫然投与は過誤認定。</td>
+          </tr>
+          <tr>
+            <td><strong>アミオダロン<br>(アンカロン)</strong></td>
+            <td><strong>定期胸部X線、肺拡散能（KL-6）、甲状腺機能、眼科角膜検査</strong></td>
+            <td><strong>【致死性間質性肺炎、甲状腺機能異常、角膜色素沈着】</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SECTION 4: トークスクリプト -->
+  <section class="content-section" id="sec-talk-scripts">
+    <div class="section-header">
+      <div class="section-title">
+        <span>🗣️</span> 【第4章】窓口服薬指導・患者向け説明トークスクリプト集
+      </div>
+      <span class="section-tag tag-blue">そのまま使える現場文例</span>
+    </div>
+    <div class="section-body">
+      <div class="cards-grid">
+        <!-- Script 1: ドライバーへのアレルギー薬 -->
+        <div class="drive-card border-blue">
+          <div class="drive-title">
+            <span>① 職業ドライバーへの抗ヒスタミン薬疑義照会＆説明</span>
+            <button class="copy-btn" onclick="copyTalk('talk-driver')">コピー</button>
+          </div>
+          <div id="talk-driver" class="talk-text">【患者説明】「お仕事で車を運転されるとのことですね。今回処方された〇〇は法律上・添付文書上『運転禁止』となっており、万が一事故を起こした際に重大な責任が問われます。運転中も眠気の出ない『アレグラ』や『ビラノア』などのお薬に変更できないか、当薬局から医師へ相談いたします。」</div>
+        </div>
+
+        <!-- Script 2: アダラートCRのゴーストピル -->
+        <div class="drive-card border-blue">
+          <div class="drive-title">
+            <span>② アダラートCR初回交付時のゴーストピル事前説明</span>
+            <button class="copy-btn" onclick="copyTalk('talk-ghost')">コピー</button>
+          </div>
+          <div id="talk-ghost" class="talk-text">【患者説明】「このお薬は有効成分が腸の中でじわじわ溶け出たあと、薬の『白い殻（抜け殻）』がそのまま便の中にポコッと出てくることがあります。お薬の成分はしっかり体に吸収されていますので、便に白い粒が混ざっていても驚いて飲むのをやめたりせず、安心してそのまま続けてくださいね。」</div>
+        </div>
+
+        <!-- Script 3: メルカゾール初回説明 -->
+        <div class="drive-card border-blue">
+          <div class="drive-title">
+            <span>③ メルカゾール初回交付時の発熱・2週採血指導</span>
+            <button class="copy-btn" onclick="copyTalk('talk-mercazole')">コピー</button>
+          </div>
+          <div id="talk-mercazole" class="talk-text">【患者説明】「このお薬を飲み始めてから2〜3ヶ月の間は、白血球が急に減ってしまう重い副作用を防ぐため、原則として2週間に1回血液検査を受けることが決められています。また、もし服用中に『突然38度以上の熱が出た』『喉が激しく痛む』という症状が出た場合は、風邪薬で様子を見ず、直ちに薬を中止して病院へご連絡ください。」</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  医薬品840品目 添付文書実務パッケージ | 運転制限（禁止・注意・安全薬）＆適用上の注意・定期検査義務 完全マニュアル<br>
+  ※本マニュアルはPMDA添付文書新記載要領（項目8、項目14）および最高裁判所医療過誤判例に基づき作成されています。
+</footer>
+
+<script>
+const searchInput = document.getElementById('driveSearch');
+const items = document.querySelectorAll('.searchable-card');
+
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.toLowerCase().trim();
+  items.forEach(card => {
+    const text = card.innerText.toLowerCase();
+    if (!query || text.includes(query)) {
+      card.style.display = 'flex';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+});
+
+function copyTalk(id) {
+  const text = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('トークスクリプトをクリップボードにコピーしました！\n窓口服薬指導でそのままご活用いただけます。');
+  }).catch(err => {
+    console.error('Copy failed: ', err);
+  });
+}
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log('[PWA] ServiceWorker registered:', reg.scope))
+      .catch(err => console.log('[PWA] ServiceWorker registration failed:', err));
+  });
+}
+</script>
+
+</body>
+</html>

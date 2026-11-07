@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <script src="auth-guard.js"></script>
+<meta charset="UTF-8">
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0284c7">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="医薬品890">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>処方鑑査＆保険請求 実務トラップ完全総まとめガイド | 医薬品840品目パッケージ</title>
+<style>
+  :root {
+    --primary: #0d9488;
+    --primary-dark: #0f766e;
+    --primary-light: #f0fdfa;
+    --danger: #dc2626;
+    --danger-light: #fef2f2;
+    --warning: #d97706;
+    --warning-light: #fffbeb;
+    --purple: #7c3aed;
+    --purple-light: #faf5ff;
+    --info: #0284c7;
+    --info-light: #f0f9ff;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", Meiryo, sans-serif;
+    background-color: var(--gray-50);
+    color: var(--gray-800);
+    line-height: 1.6;
+    padding-bottom: 80px;
+  }
+
+  /* Navigation Bar */
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 8px 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .nav-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .nav-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 9px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-700);
+    background: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+  .nav-btn:hover {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border-color: var(--primary);
+  }
+  .nav-btn.active {
+    background: var(--primary);
+    color: #fff !important;
+    border-color: var(--primary) !important;
+  }
+
+  /* Hero Banner */
+  .hero {
+    background: linear-gradient(135deg, #0f766e 0%, #0284c7 100%);
+    color: #fff;
+    padding: 36px 20px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .hero-container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .hero-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  .hero p {
+    font-size: 14px;
+    opacity: 0.95;
+    max-width: 850px;
+    margin: 0 auto;
+  }
+
+  /* Main Container */
+  .container {
+    max-width: 1400px;
+    margin: 24px auto;
+    padding: 0 16px;
+  }
+
+  /* Jump Pills */
+  .jump-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 12px;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid var(--gray-200);
+  }
+  .jump-pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: var(--gray-100);
+    color: var(--gray-700);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s;
+    border: 1px solid var(--gray-300);
+  }
+  .jump-pill:hover {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+
+  /* Search Bar */
+  .search-section {
+    background: #fff;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--gray-200);
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .search-inputs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .search-box {
+    flex: 1;
+    min-width: 250px;
+    position: relative;
+  }
+  .search-box input {
+    width: 100%;
+    padding: 10px 14px 10px 36px;
+    font-size: 14px;
+    border: 2px solid var(--gray-300);
+    border-radius: 8px;
+    outline: none;
+    transition: border 0.2s;
+  }
+  .search-box input:focus {
+    border-color: var(--primary);
+  }
+  .search-box::before {
+    content: "🔍";
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+  }
+
+  /* Sections */
+  .content-section {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 16px 20px;
+    background: linear-gradient(to right, var(--gray-50), #fff);
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .section-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--gray-900);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-tag {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .tag-danger { background: var(--danger-light); color: var(--danger); border: 1px solid #fca5a5; }
+  .tag-warning { background: var(--warning-light); color: var(--warning); border: 1px solid #fcd34d; }
+  .tag-teal { background: var(--primary-light); color: var(--primary-dark); border: 1px solid #99f6e4; }
+  .tag-purple { background: var(--purple-light); color: var(--purple); border: 1px solid #d8b4fe; }
+
+  .section-body {
+    padding: 20px;
+  }
+
+  /* Grid & Cards */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 16px;
+  }
+  .topic-card {
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 16px;
+    background: #fff;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .topic-card.border-danger { border-top: 4px solid var(--danger); }
+  .topic-card.border-warning { border-top: 4px solid var(--warning); }
+  .topic-card.border-teal { border-top: 4px solid var(--primary); }
+  .topic-card.border-purple { border-top: 4px solid var(--purple); }
+
+  .topic-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--gray-900);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .topic-desc {
+    font-size: 12px;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+  }
+
+  .detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin: 8px 0;
+  }
+  .detail-table th {
+    background: var(--gray-100);
+    padding: 6px 8px;
+    text-align: left;
+    font-weight: 700;
+    color: var(--gray-700);
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .detail-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--gray-100);
+    vertical-align: top;
+  }
+
+  .trap-alert {
+    background: var(--danger-light);
+    border: 1px solid #fca5a5;
+    border-radius: 6px;
+    padding: 10px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #991b1b;
+  }
+  .rule-box {
+    background: var(--warning-light);
+    border: 1px solid #fcd34d;
+    border-radius: 6px;
+    padding: 10px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #92400e;
+  }
+  .shoki-box {
+    background: var(--info-light);
+    border: 1px solid #bae6fd;
+    border-radius: 6px;
+    padding: 10px;
+    margin-top: 8px;
+    font-size: 11.5px;
+  }
+  .shoki-text {
+    font-family: monospace;
+    background: #fff;
+    padding: 6px 8px;
+    border-radius: 4px;
+    border: 1px dashed #7dd3fc;
+    margin-top: 4px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: #0f172a;
+  }
+  .copy-btn {
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    background: #fff;
+    border: 1px solid #0284c7;
+    color: #0284c7;
+    border-radius: 4px;
+    cursor: pointer;
+    float: right;
+  }
+  .copy-btn:hover { background: #0284c7; color: #fff; }
+
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: var(--gray-600);
+  }
+
+  @media (max-width: 768px) {
+    .cards-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header Navigation -->
+<header class="nav-bar">
+  <div class="nav-inner">
+    <div class="nav-title">
+      <span>💊</span> 医薬品890品目 添付文書実務パッケージ
+    </div>
+    <nav class="nav-links">
+      <a href="添付文書検索ビューア.html" class="nav-btn">🔍 添付文書検索ビューア</a>
+      <a href="災害時医療・BCP＆夜間休日輪番・備蓄医薬品管理完全実務マニュアル.html" class="nav-btn">🚨 災害時医療・BCP・夜間休日</a>
+      <a href="感染症・抗ウイルス薬・抗菌薬適正使用＆パキロビッド・ゾコーバ併用禁忌完全鑑査マニュアル.html" class="nav-btn">🦠 感染症・抗ウイルス・抗菌薬</a>
+      <a href="簡易懸濁法・錠剤粉砕・脱カプセル＆経管投与（胃瘻）適否完全実務マニュアル.html" class="nav-btn">🥣 簡易懸濁・粉砕・経管投与</a>
+      <a href="吸入指導加算・自己注射・特殊デバイス実技鑑査＆指導料算定完全実務マニュアル.html" class="nav-btn">💨 吸入指導＆自己注射</a>
+      <a href="長期収載品の選定療養＆後発品変更不可・患者自己負担完全実務マニュアル.html" class="nav-btn">🏷️ 長期収載品・選定療養</a>
+      <a href="在宅訪問薬剤管理指導＆多職種連携（医師・ケアマネ報告書）完全実務マニュアル.html" class="nav-btn">🏠 在宅訪問＆多職種連携</a>
+      <a href="他科処方・広域処方鑑査＆門前外頻出薬・他院併用薬相互作用完全マニュアル.html" class="nav-btn">🏥 他科・広域処方鑑査</a>
+      <a href="薬歴記載（SOAP法）＆個別指導対策・指導料算定完全マニュアル.html" class="nav-btn">📑 薬歴SOAP＆個別指導対策</a>
+      <a href="疑義照会＆調剤過誤・ヒヤリハット防止・医療事故対策完全マニュアル.html" class="nav-btn">🚨 疑義照会＆調剤過誤防止</a>
+      <a href="高齢者・ポリファーマシー鑑査＆PTP誤飲・認知症・残薬調整完全マニュアル.html" class="nav-btn">👴 高齢者・ポリファーマシー</a>
+      <a href="妊婦・授乳婦・生殖年齢患者_添付文書禁忌＆授乳移行・胎児安全性完全マニュアル.html" class="nav-btn">🤰 妊婦・授乳婦・胎児安全性</a>
+      <a href="運転制限（禁止・注意・安全薬）＆適用上の注意・定期検査義務完全マニュアル.html" class="nav-btn">🚗 運転制限・適用注意・検査</a>
+      <a href="小児用量換算・禁忌＆透析・腎不全投与設計完全マニュアル.html" class="nav-btn">👶 小児・透析投与設計</a>
+      <a href="麻薬・覚醒剤原料・毒薬劇薬_法的適正管理＆薬事監視・事故届完全マニュアル.html" class="nav-btn">⚖️ 麻薬・法規管理</a>
+      <a href="ハイリスク薬管理指導＆保管・特殊手技・パニック値完全ガイド.html" class="nav-btn">⚡ ハイリスク薬・特殊管理</a>
+      <a href="処方鑑査＆保険請求_実務トラップ完全総まとめガイド.html" class="nav-btn active">📑 処方鑑査・実務総まとめ</a>
+      <a href="配合剤vs単剤_適応症・用量上限・第一選択制限完全ガイド.html" class="nav-btn">💊 配合剤vs単剤ガイド</a>
+      <a href="同一成分・別商品名・規格違い_適応不一致完全ガイド.html" class="nav-btn">🔀 同一成分・別適応</a>
+      <a href="支払基金審査徹底対策_返戻査定防止＆公式審査事例完全マニュアル.html" class="nav-btn">⚖️ 支払基金審査対策</a>
+      <a href="併用薬・相互作用＆用法用量影響_添付文書完全ガイド.html" class="nav-btn">🔄 併用薬・用量影響</a>
+      <a href="臨床トラップ＆ハイリスク相互作用_添付文書完全ガイド.html" class="nav-btn">⚠️ 臨床トラップ23選</a>
+      <a href="保険請求査定防止＆添付文書実務ガイド.html" class="nav-btn">🛡️ 保険請求査定防止</a>
+      <a href="適応症・効能効果_厳格審査マニュアル.html" class="nav-btn">🎯 適応症・厳格審査</a>
+      <a href="適宜増減なし医薬品一覧_厳格用量マニュアル.html" class="nav-btn">📏 適宜増減なし263</a>
+      <a href="検査値用量調整_適正使用ガイド.html" class="nav-btn">🧪 検査値用量調整</a>
+      <a href="なぜ厳しい設定があるのか_医薬品適正使用と規制の歴史・医学的理由.html" class="nav-btn">📜 規制・医学的理由</a>
+      <button onclick="pharmaLogout()" class="nav-btn" style="background:#dc2626; color:#fff; border-color:#ef4444; margin-left:auto; cursor:pointer;">🔒 ログアウト</button>
+    </nav>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-container">
+    <span class="hero-badge">日常調剤鑑査＆レセプト請求 完全防衛マニュアル</span>
+    <h1>処方鑑査＆保険請求 実務トラップ完全総まとめ</h1>
+    <p>粉砕・脱カプセル・一包化の可否、厳格服用タイミング、外用薬（湿布63枚・点眼本数・軟膏混合）、長期収載品選定療養、向精神薬多剤3剤制限、漢方病名・甘草重複まで—現場で頻発する盲点を完全網羅</p>
+  </div>
+</div>
+
+<main class="container">
+
+  <!-- Jump Navigation -->
+  <div class="jump-pills">
+    <a href="#sec-crush" class="jump-pill">🔨 【第1章】粉砕・脱カプセル・一包化可否</a>
+    <a href="#sec-timing" class="jump-pill">⏰ 【第2章】厳格服用タイミング（起床時・食直前等）</a>
+    <a href="#sec-external" class="jump-pill">🧴 【第3章】外用薬（湿布63枚・軟膏混合・点眼）</a>
+    <a href="#sec-sentei" class="jump-pill">🏷️ 【第4章】長期収載品選定療養＆医療上必要性</a>
+    <a href="#sec-psych" class="jump-pill">🧠 【第5章】睡眠薬・向精神薬（多剤3剤制限・日数）</a>
+    <a href="#sec-kampo" class="jump-pill">🌿 【第6章】漢方製剤（病名不一致・甘草合算）</a>
+  </div>
+
+  <!-- Search -->
+  <div class="search-section">
+    <div class="search-inputs">
+      <div class="search-box">
+        <input type="text" id="topicSearch" placeholder="キーワード検索（例: アダラートCR, 食直前, 湿布63枚, 選定療養, 向精神薬3剤, 甘草）...">
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: 粉砕・一包化 -->
+  <section class="content-section" id="sec-crush">
+    <div class="section-header">
+      <div class="section-title">
+        <span>🔨</span> 【第1章】粉砕・脱カプセル・一包化の可否＆一包化加算査定防止
+      </div>
+      <span class="section-tag tag-danger">調剤事故・過誤防止 S級</span>
+    </div>
+    <div class="section-body">
+      <div class="cards-grid">
+        <!-- Card 1: 徐放錠・腸溶錠 -->
+        <div class="topic-card border-danger searchable-card">
+          <div class="topic-title">
+            <span>徐放錠・腸溶錠の粉砕禁止</span>
+            <span class="section-tag tag-danger">致死・胃障害リスク</span>
+          </div>
+          <div class="topic-desc">徐放構造破壊による血中濃度急上昇、胃酸による有効成分分解</div>
+          <table class="detail-table">
+            <thead><tr><th>薬剤群・代表薬</th><th>粉砕禁止の理由</th><th>粉砕時の重大危険</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>アダラートCR / テオドール / スローケー</strong></td>
+                <td>徐放マトリクス・徐放性コーティング製剤</td>
+                <td>全量が一気に放出・吸収され、<strong>急激な血圧低下・ショック死、テオフィリン中毒、致死性不整脈</strong>を誘発。</td>
+              </tr>
+              <tr>
+                <td><strong>バイアスピリン / タケプロン / パリエット</strong></td>
+                <td>腸溶性コーティング錠（胃酸耐性）</td>
+                <td>胃内で溶解し、<strong>重篤な胃潰瘍・消化管出血</strong>を惹起。または胃酸で主薬が失活し効果ゼロ。</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="trap-alert">
+            <strong>⚠️ 一包化加算の査定トラップ:</strong> 処方箋に「一包化」と記載されていても、一包化不可薬（粉砕不可・潮解性）を医師への疑義照会なしに粉砕・一包化して加算請求すると、一包化加算ごと全額査定されます。
+          </div>
+        </div>
+
+        <!-- Card 2: 飛散曝露毒性・潮解 -->
+        <div class="topic-card border-danger searchable-card">
+          <div class="topic-title">
+            <span>飛散曝露毒性＆吸湿・潮解医薬品</span>
+            <span class="section-tag tag-danger">調剤室安全・品質劣化</span>
+          </div>
+          <div class="topic-desc">女性調剤者の経皮吸収催奇形性、大気中水分による潮解</div>
+          <table class="detail-table">
+            <thead><tr><th>薬剤</th><th>性状・毒性</th><th>調剤上の厳格義務</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>デュタステリド / フィナステリド</strong></td>
+                <td>経皮吸収性（カプセル・錠剤）</td>
+                <td><strong>粉砕・脱カプセル絶対禁止</strong>。飛散粉塵が妊婦に付着・吸入されると男子胎児の外生殖器正常発育を阻害。</td>
+              </tr>
+              <tr>
+                <td><strong>デパケン / エパデール</strong></td>
+                <td>強い吸湿性・軟化（潮解）</td>
+                <td>分包紙を透過して大気中の湿気を吸い液状化・固着。原則PTP保管（一包化不適）。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: 厳格服用タイミング -->
+  <section class="content-section" id="sec-timing">
+    <div class="section-header">
+      <div class="section-title">
+        <span>⏰</span> 【第2章】厳格服用タイミング（起床時・食直前・食直後）＆用法不備査定防止
+      </div>
+      <span class="section-tag tag-warning">用法不一致査定ワースト</span>
+    </div>
+    <div class="section-body">
+      <div class="cards-grid">
+        <!-- Card: 起床時・食直前・食直後 -->
+        <div class="topic-card border-warning searchable-card">
+          <div class="topic-title">
+            <span>服用タイミングと審査足切りルール</span>
+            <span class="section-tag tag-warning">「食後」処方は査定！</span>
+          </div>
+          <div class="topic-desc">医師が漫然と「毎食後」で切った処方箋をそのまま請求すると100%返戻</div>
+          <table class="detail-table">
+            <thead><tr><th>用法</th><th>該当薬剤</th><th>医学的理由と審査判定</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>起床時すぐ</strong><br>(水約180mL)</td>
+                <td><strong>ボナロン / フォサマック / アクトネル</strong> (BP薬)</td>
+                <td>食後服用だと食物中のカルシウムと結合し吸収率ゼロ。服用後30分横臥禁止（逆流性食道潰瘍防止）。「毎食後」処方は疑義照会必須。</td>
+              </tr>
+              <tr>
+                <td><strong>食直前</strong><br>(食事開始10分以内)</td>
+                <td><strong>ベイスン / グルコバイ / セイブル</strong> (α-GI)<br><strong>シュアポスト / ファスティック</strong> (速効型)</td>
+                <td>二糖類分解酵素阻害のため、食後服用では血糖降下作用なし。速効型分泌薬は食後服用で遅発性低血糖。<strong>処方箋が「毎食後」なら査定対象</strong>。</td>
+              </tr>
+              <tr>
+                <td><strong>食直後</strong></td>
+                <td><strong>エパデール / ロトリガ</strong></td>
+                <td>食事の脂質によってミセル化・吸収されるため、空腹時・食間服用ではバイオアベイラビリティが激減。</td>
+              </tr>
+              <tr>
+                <td><strong>就寝直前</strong></td>
+                <td><strong>マイスリー / ハルシオン / ルネスタ</strong></td>
+                <td>超短時間作用型睡眠薬。「就寝前（30分前）」だと入浴・歩行中にふらつき・転倒・一過性前向性健忘を起こすため「直前」指定。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: 外用薬 -->
+  <section class="content-section" id="sec-external">
+    <div class="section-header">
+      <div class="section-title">
+        <span>🧴</span> 【第3章】外用薬（湿布63枚・ステロイドランク・点眼本数・軟膏混合）
+      </div>
+      <span class="section-tag tag-teal">支払基金重点点検項目</span>
+    </div>
+    <div class="section-body">
+      <div class="cards-grid">
+        <!-- Card 1: 湿布63枚＆点眼本数 -->
+        <div class="topic-card border-teal searchable-card">
+          <div class="topic-title">
+            <span>湿布63枚制限＆点眼液本数計算</span>
+            <span class="section-tag tag-teal">機械査定防止</span>
+          </div>
+          <div class="topic-desc">1処方上限枚数と過剰本数の自動フラグ</div>
+          <ul style="font-size:12px; line-height:1.8; padding-left:18px;">
+            <li><strong>湿布薬63枚制限:</strong> 1処方につき原則63枚上限。超過時は理由（広範疼痛部位・頻回通院困難等）の症状詳記が必須。同一効能の湿布2種併用（腰にモーラス＋膝にロキソニン）は部位詳記なしで査定。</li>
+            <li><strong>点眼液の本数計算:</strong> 1本5mL＝約100滴。「両眼1日3回（計6滴/日）➜ 30日で180滴（約2本）」。<strong>30日処方で3本以上出すと過剰投与として全額査定</strong>。</li>
+          </ul>
+        </div>
+
+        <!-- Card 2: 外用ステロイドランク＆軟膏混合 -->
+        <div class="topic-card border-teal searchable-card">
+          <div class="topic-title">
+            <span>ステロイドランク別部位＆軟膏混合</span>
+            <span class="section-tag tag-teal">配合変化・審査</span>
+          </div>
+          <div class="topic-desc">顔面強ランク処方の査定、エマルション破壊</div>
+          <table class="detail-table">
+            <thead><tr><th>ランク</th><th>代表薬</th><th>処方適応・部位制限</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>I群 Strongest / II群 Very Strong</strong></td>
+                <td>デルモベート / ダイアコート / マイザー / アンテベート</td>
+                <td>体幹・四肢・手足の苔癬化病変。<strong>顔面・頸部・陰部への処方は査定アラート（皮膚萎縮・緑内障）</strong>。</td>
+              </tr>
+              <tr>
+                <td><strong>III群 Strong / IV群 Medium</strong></td>
+                <td>ボアラ / メサデルム / ロコイド / キンダベート</td>
+                <td>顔面・陰部・小児にはIV群（Medium）以下が原則。</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="rule-box">
+            <strong>軟膏混合の配合変化:</strong> ヒルドイドソフト（W/O型乳剤）に水性クリーム（O/W型）やステロイド軟膏を安易に混ぜると、乳化破壊（相分離・水滴遊離）や主薬力価低下を起こします。
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: 長期収載品選定療養 -->
+  <section class="content-section" id="sec-sentei">
+    <div class="section-header">
+      <div class="section-title">
+        <span>🏷️</span> 【第4章】長期収載品の選定療養（患者希望自己負担）＆医療上必要性
+      </div>
+      <span class="section-tag tag-purple">2024年〜2026年最新制度</span>
+    </div>
+    <div class="section-body">
+      <div class="cards-grid">
+        <div class="topic-card border-purple searchable-card">
+          <div class="topic-title">
+            <span>選定療養の仕組みと「医療上必要性」</span>
+            <span class="section-tag tag-purple">保険給付判定</span>
+          </div>
+          <div class="topic-desc">後発医薬品がある先発品を希望した場合の特別料金（差額の1/4自己負担）</div>
+          <p style="font-size:12px; line-height:1.7;">
+            <strong>【医療上必要性が認められる正当理由（選定療養除外・保険給付のまま交付）】</strong><br>
+            ① 後発品で過去にアレルギー・重篤な副作用・効果不十分の治療歴がある場合<br>
+            ② 後発品に存在しない剤形（錠剤・シロップ・粉砕対応等）が必要な場合<br>
+            ③ 嚥下困難で先発品（単剤・特定コーティング）でなければ服用困難な場合<br>
+            ④ 後発医薬品の限定出荷・供給停止に伴い先発品を使用せざるを得ない場合
+          </p>
+          <div class="shoki-box">
+            <span style="font-weight:700; color:#0369a1;">📋 医療上必要性のレセプト症状詳記文例</span>
+            <button class="copy-btn" onclick="copySnippet('shoki-sentei')">コピー</button>
+            <div id="shoki-sentei" class="shoki-text">【症状詳記】過去に後発医薬品（〇〇錠）への変更時に薬疹（アレルギー反応）の既往があるため、医学的観点から先発医薬品（〇〇錠）の継続投与が不可欠であり、医療上必要性があると判断し保険給付にて処方した。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: 睡眠薬・向精神薬 -->
+  <section class="content-section" id="sec-psych">
+    <div class="section-header">
+      <div class="section-title">
+        <span>🧠</span> 【第5章】睡眠薬・向精神薬の処方制限（多剤3剤禁止・日数上限）
+      </div>
+      <span class="section-tag tag-danger">処方料・調剤料減算</span>
+    </div>
+    <div class="section-body">
+      <div class="cards-grid">
+        <div class="topic-card border-danger searchable-card">
+          <div class="topic-title">
+            <span>多剤併用制限（3剤以上で減算・全査定）</span>
+            <span class="section-tag tag-danger">厳罰ルール</span>
+          </div>
+          <div class="topic-desc">ベンゾ系・非ベンゾ系の重複処方制限</div>
+          <table class="detail-table">
+            <thead><tr><th>分類</th><th>処方上限数</th><th>超過時のペナルティ</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>抗不安薬</strong></td>
+                <td><strong>2種類まで</strong></td>
+                <td>3種類以上処方で<strong>処方料・処方箋料が大幅減算</strong>（精神科減算）。</td>
+              </tr>
+              <tr>
+                <td><strong>睡眠薬</strong></td>
+                <td><strong>2種類まで</strong></td>
+                <td>3種類以上処方で<strong>処方料減算または薬剤料全額査定</strong>。</td>
+              </tr>
+              <tr>
+                <td><strong>向精神薬日数</strong></td>
+                <td><strong>14日 / 30日 / 90日</strong></td>
+                <td>告示制限を超過した日数は100%返戻・査定。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6: 漢方製剤 -->
+  <section class="content-section" id="sec-kampo">
+    <div class="section-header">
+      <div class="section-title">
+        <span>🌿</span> 【第6章】漢方製剤（保険病名不一致・甘草合算・偽アルドステロン症）
+      </div>
+      <span class="section-tag tag-warning">安全性＆査定</span>
+    </div>
+    <div class="section-body">
+      <div class="cards-grid">
+        <div class="topic-card border-warning searchable-card">
+          <div class="topic-title">
+            <span>甘草重複合算＆保険病名チェック</span>
+            <span class="section-tag tag-warning">低K血症・偽アルドステロン症</span>
+          </div>
+          <div class="topic-desc">漢方薬併用時の甘草1日2.5g〜5g超過リスク</div>
+          <ul style="font-size:12px; line-height:1.8; padding-left:18px;">
+            <li><strong>甘草合算リスク:</strong> 漢方薬を2剤以上併用すると甘草総量が急増。11β-HSD2が阻害され、<strong>低カリウム血症、激しい浮腫、高血圧、四肢脱力</strong>（偽アルドステロン症）を誘発。</li>
+            <li><strong>芍薬甘草湯の連用査定:</strong> こむら返りの頓用は通るが、漫然と定期連用すると支払基金の重点点検で査定。</li>
+            <li><strong>葛根湯:</strong> 感冒・肩こりは通るが「腰痛症」では適応外査定。</li>
+            <li><strong>防風通聖散:</strong> 単なる肥満では査定。「肥満症」「高血圧随伴症状」病名が必須。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  医薬品840品目 添付文書実務パッケージ | 処方鑑査＆保険請求 実務トラップ完全総まとめガイド<br>
+  ※本ツールはPMDA公式添付文書情報及び社会保険診療報酬支払基金審査基準に基づき作成されています。
+</footer>
+
+<script>
+// Search function
+const searchInput = document.getElementById('topicSearch');
+const cards = document.querySelectorAll('.searchable-card');
+
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.toLowerCase().trim();
+  cards.forEach(card => {
+    const text = card.innerText.toLowerCase();
+    if (!query || text.includes(query)) {
+      card.style.display = 'flex';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+});
+
+// Copy snippet
+function copySnippet(id) {
+  const text = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('症状詳記文例をクリップボードにコピーしました！');
+  }).catch(err => {
+    console.error('Copy failed: ', err);
+  });
+}
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log('[PWA] ServiceWorker registered:', reg.scope))
+      .catch(err => console.log('[PWA] ServiceWorker registration failed:', err));
+  });
+}
+</script>
+
+</body>
+</html>

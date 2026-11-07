@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <script src="auth-guard.js"></script>
+  <meta charset="UTF-8">
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0284c7">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="医薬品890">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>妊婦・授乳婦・生殖年齢患者 添付文書禁忌＆授乳移行・胎児安全性完全マニュアル</title>
+  <style>
+    :root {
+      --primary: #be185d;
+      --primary-light: #fce7f3;
+      --primary-dark: #9d174d;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --success: #16a34a;
+      --success-bg: #f0fdf4;
+      --info: #0284c7;
+      --info-bg: #f0f9ff;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-700: #334155;
+      --gray-800: #1e293b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fdf2f8;
+      color: var(--gray-800);
+      line-height: 1.6;
+    }
+    .nav-bar {
+      background: #831843;
+      padding: 10px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .nav-btn {
+      color: white;
+      text-decoration: none;
+      font-size: 11px;
+      padding: 5px 9px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.12);
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.28); }
+    .nav-btn.active { background: #db2777; font-weight: bold; }
+
+    .header-hero {
+      background: linear-gradient(135deg, #9d174d 0%, #be185d 50%, #db2777 100%);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+      border-bottom: 4px solid #831843;
+    }
+    .header-hero h1 { margin: 0 0 10px 0; font-size: 24px; letter-spacing: -0.5px; }
+    .header-hero p { margin: 0 auto; max-width: 900px; font-size: 13.5px; opacity: 0.95; line-height: 1.6; }
+
+    .container { max-width: 1200px; margin: 20px auto; padding: 0 16px; }
+
+    .alert-banner {
+      background: var(--danger-bg);
+      border-left: 6px solid var(--danger);
+      padding: 14px 18px;
+      border-radius: 6px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .alert-banner h2 { margin: 0 0 6px 0; font-size: 15px; color: var(--danger); display: flex; align-items: center; gap: 6px; }
+    .alert-banner p { margin: 0; font-size: 12.5px; color: #7f1d1d; line-height: 1.6; }
+
+    .section-card {
+      background: white;
+      border-radius: 10px;
+      padding: 22px;
+      margin-bottom: 24px;
+      border: 1px solid var(--gray-200);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+    .section-card h2 {
+      margin: 0 0 14px 0;
+      font-size: 17px;
+      color: var(--primary-dark);
+      border-bottom: 2px solid var(--primary-light);
+      padding-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12px; }
+    th, td { border: 1px solid var(--gray-200); padding: 8px 10px; text-align: left; vertical-align: top; }
+    th { background: #fdf2f8; color: var(--primary-dark); font-weight: 600; }
+    tr:nth-child(even) { background: #fff5f7; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10.5px;
+      font-weight: bold;
+    }
+    .badge-danger { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
+    .badge-warning { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .badge-success { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+    .badge-info { background: #e0f2fe; color: #075985; border: 1px solid #7dd3fc; }
+
+    .talk-box {
+      background: #fdf4ff;
+      border: 1px dashed #d946ef;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-top: 10px;
+    }
+    .talk-box h4 { margin: 0 0 6px 0; color: #86198f; font-size: 13px; }
+    .talk-box p { margin: 0; font-size: 12px; color: #4a044e; }
+  </style>
+</head>
+<body>
+
+  <!-- ナビゲーションバー (全17ツール同期) -->
+  <header class="nav-bar">
+  <div class="nav-inner">
+    <div class="nav-title">
+      <span>💊</span> 医薬品890品目 添付文書実務パッケージ
+    </div>
+    <nav class="nav-links">
+      <a href="添付文書検索ビューア.html" class="nav-btn">🔍 添付文書検索ビューア</a>
+      <a href="災害時医療・BCP＆夜間休日輪番・備蓄医薬品管理完全実務マニュアル.html" class="nav-btn">🚨 災害時医療・BCP・夜間休日</a>
+      <a href="感染症・抗ウイルス薬・抗菌薬適正使用＆パキロビッド・ゾコーバ併用禁忌完全鑑査マニュアル.html" class="nav-btn">🦠 感染症・抗ウイルス・抗菌薬</a>
+      <a href="簡易懸濁法・錠剤粉砕・脱カプセル＆経管投与（胃瘻）適否完全実務マニュアル.html" class="nav-btn">🥣 簡易懸濁・粉砕・経管投与</a>
+      <a href="吸入指導加算・自己注射・特殊デバイス実技鑑査＆指導料算定完全実務マニュアル.html" class="nav-btn">💨 吸入指導＆自己注射</a>
+      <a href="長期収載品の選定療養＆後発品変更不可・患者自己負担完全実務マニュアル.html" class="nav-btn">🏷️ 長期収載品・選定療養</a>
+      <a href="在宅訪問薬剤管理指導＆多職種連携（医師・ケアマネ報告書）完全実務マニュアル.html" class="nav-btn">🏠 在宅訪問＆多職種連携</a>
+      <a href="他科処方・広域処方鑑査＆門前外頻出薬・他院併用薬相互作用完全マニュアル.html" class="nav-btn">🏥 他科・広域処方鑑査</a>
+      <a href="薬歴記載（SOAP法）＆個別指導対策・指導料算定完全マニュアル.html" class="nav-btn">📑 薬歴SOAP＆個別指導対策</a>
+      <a href="疑義照会＆調剤過誤・ヒヤリハット防止・医療事故対策完全マニュアル.html" class="nav-btn">🚨 疑義照会＆調剤過誤防止</a>
+      <a href="高齢者・ポリファーマシー鑑査＆PTP誤飲・認知症・残薬調整完全マニュアル.html" class="nav-btn">👴 高齢者・ポリファーマシー</a>
+      <a href="妊婦・授乳婦・生殖年齢患者_添付文書禁忌＆授乳移行・胎児安全性完全マニュアル.html" class="nav-btn active">🤰 妊婦・授乳婦・胎児安全性</a>
+      <a href="運転制限（禁止・注意・安全薬）＆適用上の注意・定期検査義務完全マニュアル.html" class="nav-btn">🚗 運転制限・適用注意・検査</a>
+      <a href="小児用量換算・禁忌＆透析・腎不全投与設計完全マニュアル.html" class="nav-btn">👶 小児・透析投与設計</a>
+      <a href="麻薬・覚醒剤原料・毒薬劇薬_法的適正管理＆薬事監視・事故届完全マニュアル.html" class="nav-btn">⚖️ 麻薬・法規管理</a>
+      <a href="ハイリスク薬管理指導＆保管・特殊手技・パニック値完全ガイド.html" class="nav-btn">⚡ ハイリスク薬・特殊管理</a>
+      <a href="処方鑑査＆保険請求_実務トラップ完全総まとめガイド.html" class="nav-btn">📑 処方鑑査・実務総まとめ</a>
+      <a href="配合剤vs単剤_適応症・用量上限・第一選択制限完全ガイド.html" class="nav-btn">💊 配合剤vs単剤ガイド</a>
+      <a href="同一成分・別商品名・規格違い_適応不一致完全ガイド.html" class="nav-btn">🔀 同一成分・別適応</a>
+      <a href="支払基金審査徹底対策_返戻査定防止＆公式審査事例完全マニュアル.html" class="nav-btn">⚖️ 支払基金審査対策</a>
+      <a href="併用薬・相互作用＆用法用量影響_添付文書完全ガイド.html" class="nav-btn">🔄 併用薬・用量影響</a>
+      <a href="臨床トラップ＆ハイリスク相互作用_添付文書完全ガイド.html" class="nav-btn">⚠️ 臨床トラップ23選</a>
+      <a href="保険請求査定防止＆添付文書実務ガイド.html" class="nav-btn">🛡️ 保険請求査定防止</a>
+      <a href="適応症・効能効果_厳格審査マニュアル.html" class="nav-btn">🎯 適応症・厳格審査</a>
+      <a href="適宜増減なし医薬品一覧_厳格用量マニュアル.html" class="nav-btn">📏 適宜増減なし263</a>
+      <a href="検査値用量調整_適正使用ガイド.html" class="nav-btn">🧪 検査値用量調整</a>
+      <a href="なぜ厳しい設定があるのか_医薬品適正使用と規制の歴史・医学的理由.html" class="nav-btn">📜 規制・医学的理由</a>
+      <button onclick="pharmaLogout()" class="nav-btn" style="background:#dc2626; color:#fff; border-color:#ef4444; margin-left:auto; cursor:pointer;">🔒 ログアウト</button>
+    </nav>
+  </div>
+</header>
+
+  <div class="header-hero">
+    <h1>🤰 妊婦・授乳婦・生殖年齢患者 添付文書禁忌＆授乳移行・胎児安全性完全マニュアル</h1>
+    <p>
+      新記載要領項目「9.4 生殖能を有する者」「9.5 妊婦」「9.6 授乳婦」「2. 禁忌」徹底網羅。<br>
+      催奇形性・胎児毒性による重大医療過誤防止、中止後避妊期間、授乳婦の「添付文書と国際成育基準ギャップ」完全解決ガイド。
+    </p>
+  </div>
+
+  <div class="container">
+
+    <div class="alert-banner">
+      <h2>🚨 妊婦・生殖年齢患者鑑査の最重要防衛原則（法的損害賠償・医療事故防止）</h2>
+      <p>
+        妊娠中の薬物投与過誤は、<strong>胎児死亡・不可逆的先天奇形・発育不全</strong>を引き起こし、薬局・薬剤師に数千万円規模の損害賠償責任が課される最重要リスク分野です。<br>
+        特に<strong>「妊娠後期のNSAIDs動脈管早期閉鎖」</strong>、<strong>「中期〜後期のRAAS阻害薬による胎児腎不全・頭蓋形成不全」</strong>、<strong>「催奇形性薬の中止後避妊期間無視」</strong>、および<strong>「男性粉砕調剤時の妊婦曝露（フィナステリド等）」</strong>は、処方鑑査時のダブルチェックが義務付けられます。
+      </p>
+    </div>
+
+    <!-- セクション1: 妊娠時期別の薬物感受性と胎児毒性 -->
+    <div class="section-card">
+      <h2>📅 1. 妊娠時期別 薬物感受性タイムライン＆胎児リスク</h2>
+      <p style="font-size:12.5px; color:#475569;">
+        受精前〜妊娠末期まで、薬物によって影響が出る器官・作用機序が全く異なります。
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:18%;">妊娠時期（週数）</th>
+            <th style="width:22%;">感受性・リスク区分</th>
+            <th style="width:30%;">薬物曝露による影響</th>
+            <th style="width:30%;">代表的なハイリスク薬剤</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>受精前〜妊娠3週<br>（無影響期）</strong></td>
+            <td><span class="badge badge-info">All or None（全か無か）</span></td>
+            <td>受精卵が完全に死滅（流産）するか、完全に修復されて健常児として発育するかの二者択一。奇形は生じない。</td>
+            <td>ただし体内残留期間の極めて長い薬剤（チガソン等）は除外。</td>
+          </tr>
+          <tr>
+            <td><strong>妊娠4週〜7週末<br>（器官形成期・絶対過敏期）</strong></td>
+            <td><span class="badge badge-danger">最重要警戒期（大奇形リスク）</span></td>
+            <td>中枢神経、心臓、四肢、目、消化器などの主要重要臓器が形成される。薬物による重大奇形（催奇形性）が最も生じやすい。</td>
+            <td>
+              ・サリドマイド（四肢短縮）<br>
+              ・エトレチナート（チガソン：頭蓋・顔面奇形）<br>
+              ・バルプロ酸（デパケン：神経管閉鎖障害）<br>
+              ・MTX（多発奇形）<br>
+              ・ワルファリン（軟骨形成不全）
+            </td>
+          </tr>
+          <tr>
+            <td><strong>妊娠8週〜15週末<br>（胎児前期・相対過敏期）</strong></td>
+            <td><span class="badge badge-warning">小奇形・生殖器形成期</span></td>
+            <td>主要器官の形成は終了するが、外生殖器や口蓋などの形成、脳組織の分化が続く。機能的障害や軽微な奇形リスク。</td>
+            <td>
+              ・フィナステリド/デュタステリド（外生殖器異常）<br>
+              ・リチウム（エプスタイン奇形）<br>
+              ・テトラサイクリン系（歯牙着色）
+            </td>
+          </tr>
+          <tr>
+            <td><strong>妊娠16週〜分娩<br>（胎児後期・胎児毒性期）</strong></td>
+            <td><span class="badge badge-danger">胎児機能不全・胎児死亡</span></td>
+            <td>器官の完成後であり奇形は生じないが、胎児の臓器機能（腎機能・循環動態）に直接的な毒性影響を及ぼす。</td>
+            <td>
+              ・<strong>RAAS阻害薬（ARB/ACE阻害薬）:</strong> 羊水過少症、胎児腎不全、頭蓋骨発育不全、胎児死亡<br>
+              ・<strong>NSAIDs（ロキソニン等）:</strong> 妊娠後期の胎児動脈管早期閉鎖、肺高血圧、新生児循環遺残
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- セクション2: 添付文書で「妊婦禁忌」とされる代表薬一覧 -->
+    <div class="section-card">
+      <h2>🛑 2. 添付文書で「妊婦禁忌（投与しないこと）」とされる絶対警戒薬</h2>
+      <p style="font-size:12.5px; color:#475569;">
+        これらが処方された場合、疑義照会なしで調剤することは絶対過誤となります。
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:20%;">薬効群・代表薬剤</th>
+            <th style="width:20%;">禁忌指定の理由（毒性・機序）</th>
+            <th style="width:30%;">添付文書の警告・禁忌記載</th>
+            <th style="width:30%;">妊娠中の安全な代替薬（疑義照会先）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>ARB / ACE阻害薬<br>直接的レニン阻害薬</strong><br><span style="font-size:11px;">オルメテック、ディオバン、ミカルディス、レニベース等</span></td>
+            <td><strong>胎児毒性・催奇形性</strong><br>妊娠中期〜後期の羊水過少症、胎児腎不全、頭蓋不全、新生児死亡。</td>
+            <td><span class="badge badge-danger">妊婦絶対禁忌</span><br>妊婦又は妊娠している可能性のある女性には投与しないこと。発見次第直ちに中止すること。</td>
+            <td>
+              <strong>第一選択:</strong><br>
+              ・メチルドパ（アルドメット）<br>
+              ・ヒドララジン（アプレゾリン）<br>
+              ・ラベタロール（トランデート）<br>
+              （※CCBニフェジピンは妊娠20週以降有益性投与可能）
+            </td>
+          </tr>
+          <tr>
+            <td><strong>スタチン系（HMG-CoA還元酵素阻害薬）</strong><br><span style="font-size:11px;">リピトール、クレストール、リバロ、メバロチン等</span></td>
+            <td><strong>胎児脂質合成阻害</strong><br>コレステロールは胎児細胞膜やホルモン合成に必須であり、胎児発育不全・骨格奇形のリスク。</td>
+            <td><span class="badge badge-danger">妊婦絶対禁忌</span><br>妊婦又は妊娠している可能性のある女性には投与しないこと。</td>
+            <td>
+              <strong>妊娠中は原則スタチン休薬</strong><br>
+              （妊娠中の高脂血症は生理的変化であり、分娩まで薬物治療は中断することが一般的）。
+            </td>
+          </tr>
+          <tr>
+            <td><strong>経口血糖降下薬全般</strong><br><span style="font-size:11px;">メトホルミン、SU剤、DPP-4阻害薬、SGLT2阻害薬等</span></td>
+            <td><strong>胎児奇形・低血糖・アシドーシス</strong><br>胎盤通過性があり、胎児奇形や新生児の遷延性低血糖を引き起こす。</td>
+            <td><span class="badge badge-danger">妊婦禁忌（インスリン以外不可）</span><br>妊婦又は妊娠している可能性のある女性には投与しないこと。</td>
+            <td>
+              <strong>インスリン注射一択</strong><br>
+              妊娠糖尿病・糖尿病合併妊娠は胎盤通過性のないインスリン製剤で厳格血糖コントロール。
+            </td>
+          </tr>
+          <tr>
+            <td><strong>NSAIDs（経口・坐剤・貼付薬）</strong><br><span style="font-size:11px;">ロキソニン、ボルタレン、イブプロフェン、モーラステープ等</span></td>
+            <td><strong>動脈管早期閉鎖・羊水過少</strong><br>特に妊娠後期の胎児動脈管収縮、新生児遷延性肺高血圧症、分娩遅延。</td>
+            <td><span class="badge badge-danger">妊娠後期絶対禁忌</span><br>妊娠後期の女性には投与しないこと。外用湿布薬（ケトプロフェン等）も大量吸収で禁忌。</td>
+            <td>
+              <strong>アセトアミノフェン（カロナール）</strong><br>
+              妊娠全期を通して最も安全に使用できる解熱鎮痛薬のゴールドスタンダード。
+            </td>
+          </tr>
+          <tr>
+            <td><strong>ワルファリンカリウム</strong></td>
+            <td><strong>ワルファリン胎児症</strong><br>鼻形成不全、点状軟骨異形成症、中枢神経系障害、胎児頭蓋内出血。</td>
+            <td><span class="badge badge-danger">妊婦絶対禁忌</span><br>胎盤を容易に通過し催奇形性・致死的出血を来す。</td>
+            <td>
+              <strong>ヘパリン製剤</strong><br>
+              高分子で胎盤を通過しないため、妊娠中の抗凝固療法はヘパリン一択。
+            </td>
+          </tr>
+          <tr>
+            <td><strong>抗てんかん薬（バルプロ酸等）</strong><br><span style="font-size:11px;">デパケン、セレニカ</span></td>
+            <td><strong>神経管閉鎖障害（二分脊椎）</strong><br>児のIQ低下、自閉症スペクトラムリスク上昇。</td>
+            <td><span class="badge badge-danger">原則禁忌（代替困難時除く）</span><br>催奇形性発現率が約10%と極めて高頻度。</td>
+            <td>
+              <strong>レベチラセタム（イーケプラ）</strong>や<strong>ラモトリギン（ラミクタール）</strong>への事前切り替え＋高用量葉酸投与。
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- セクション3: 服用中止後の厳格避妊期間＆生殖能注意薬 -->
+    <div class="section-card">
+      <h2>⚠️ 3. 「中止後も避妊が必要な薬」＆ 男性の粉砕・調剤曝露トラップ</h2>
+      <p style="font-size:12.5px; color:#475569;">
+        薬の服用中だけでなく、<strong>「服薬中止後数ヶ月〜数年間にわたる避妊」</strong>が必要な薬剤、および男性型脱毛症薬の妊婦接触禁忌ルール。
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:22%;">薬剤名</th>
+            <th style="width:28%;">女性の避妊義務期間</th>
+            <th style="width:28%;">男性の避妊義務期間</th>
+            <th style="width:22%;">実務鑑査・調剤上の注意</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>エトレチナート<br>（チガソン）</strong><br><span style="font-size:11px;">乾癬治療薬</span></td>
+            <td><span class="badge badge-danger">服用中 ＋ 中止後 2年間</span></td>
+            <td><span class="badge badge-danger">服用中 ＋ 中止後 6ヶ月間</span></td>
+            <td>脂肪組織に極めて長期蓄積。妊娠検査陰性確認後投与。献血も中止後2年間禁止。</td>
+          </tr>
+          <tr>
+            <td><strong>レナリドミド / ポマリドミド<br>（レブラミド / ポマリスト）</strong></td>
+            <td><span class="badge badge-danger">服用4週前〜中止後 4週間</span></td>
+            <td><span class="badge badge-danger">服用中 ＋ 中止後 4週間（コンドーム）</span></td>
+            <td>サリドマイド誘導体。精液中へ移行するため男性も必須。厳格流通管理（RevMate）。</td>
+          </tr>
+          <tr>
+            <td><strong>メトトレキサート<br>（リウマトレックス）</strong></td>
+            <td><span class="badge badge-warning">服用中 ＋ 少なくとも1月経周期</span></td>
+            <td><span class="badge badge-warning">服用中 ＋ 少なくとも3ヶ月間</span></td>
+            <td>精子形成・卵子形成阻害および催奇形性。妊活希望時は半年以上前の休薬計画が必要。</td>
+          </tr>
+          <tr>
+            <td><strong>フィナステリド / デュタステリド<br>（プロペシア / ザガーロ）</strong><br><span style="font-size:11px;">AGA・前立腺肥大症</span></td>
+            <td><strong>女性禁忌</strong>（適応なし）</td>
+            <td><strong>【超重要】妊婦・授乳婦の接触絶対禁止！</strong><br>粉砕錠や割れたカプセルから経皮吸収され、男子胎児の外生殖器正常発育を阻害する。</td>
+            <td>薬局内で<strong>粉砕・分包調剤は絶対禁止</strong>。妊婦の調剤従事者・薬局事務員も素手で触れてはならない。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- セクション4: 授乳婦の添付文書 vs 最新成育医療研究センター基準 -->
+    <div class="section-card">
+      <h2>🤱 4. 授乳婦鑑査の真実：添付文書（授乳中止）vs 国際成育基準（授乳継続）</h2>
+      <p style="font-size:12.5px; color:#475569;">
+        添付文書の約7割に「授乳を避けさせること」と記載されていますが、これは製薬企業が授乳婦の臨床治験を行っていないための法的免責文言に過ぎません。<br>
+        <strong>国立成育医療研究センター（NCCHD）「授乳と薬」</strong>や<strong>米国国立衛生研究所（LactMed）</strong>の国際エビデンスに基づき、不必要な母乳断念（母乳育児の中断）を防ぐ鑑査が現代医療の標準です。
+      </p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:12px;">
+        <!-- 安全薬 -->
+        <div style="background:var(--success-bg); border:1px solid #86efac; border-radius:8px; padding:14px;">
+          <h3 style="margin:0 0 8px 0; color:var(--success); font-size:14px;">✅ 添付文書上「授乳回避」でも【授乳継続可能】な安全薬</h3>
+          <ul style="margin:0; padding-left:18px; font-size:12px; line-height:1.7;">
+            <li><strong>解熱鎮痛:</strong> アセトアミノフェン、イブプロフェン（RID<1%で乳汁移行極小）</li>
+            <li><strong>抗菌薬:</strong> ペニシリン系（サワシリン）、セフェム系（ケフラール等）、マクロライド系（クラリス）</li>
+            <li><strong>抗アレルギー:</strong> フェキソフェナジン（アレグラ）、ロラタジン（クラリチン）、セチリジン</li>
+            <li><strong>消化器薬:</strong> ファモチジン（ガスター）、ランソプラゾール、酸化マグネシウム</li>
+            <li><strong>喘息吸入:</strong> パルミコート、フルタイド、サルタノール（全身移行無視できる）</li>
+            <li><strong>降圧薬:</strong> エナラプリル、ニフェジピン、アムロジピン、プロプラノロール</li>
+          </ul>
+        </div>
+
+        <!-- 絶対危険薬 -->
+        <div style="background:var(--danger-bg); border:1px solid #f87171; border-radius:8px; padding:14px;">
+          <h3 style="margin:0 0 8px 0; color:var(--danger); font-size:14px;">🛑 乳汁移行で乳児に重篤中毒が出る【真の授乳絶対禁止薬】</h3>
+          <ul style="margin:0; padding-left:18px; font-size:12px; line-height:1.7;">
+            <li><strong>コデインリン酸塩（咳止め）:</strong> CYP2D6超代謝母でモルヒネが超高濃度乳汁移行 ➜ <strong>乳児呼吸抑制・死亡事例あり！絶対禁止！</strong></li>
+            <li><strong>アミオダロン（アンカロン）:</strong> 高濃度ヨウ素乳汁移行 ➜ 乳児甲状腺機能低下症。</li>
+            <li><strong>放射性医薬品・抗悪性腫瘍薬:</strong> 骨髄抑制・細胞毒性のため完全授乳禁止。</li>
+            <li><strong>リチウム（リーマス）:</strong> 乳児血中へ高移行 ➜ 嗜眠、筋緊張低下、チアノーゼ。</li>
+            <li><strong>エルゴタミン（クリアミン等）:</strong> 児の麦角中毒（嘔吐、下痢、痙攣）。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="talk-box">
+        <h4>💬 窓口服薬指導トークスクリプト（添付文書と成育センター基準の説明）</h4>
+        <p>
+          「お薬の説明書（添付文書）には一律で『授乳を避けること』と書かれていますが、これはメーカーが授乳中の赤ちゃんを対象にした人体実験を行えないための法律上の定型文です。国立成育医療研究センターや国際的な専門機関（LactMed）の厳格な医学データでは、このお薬がお母さんの母乳に出る量はごくわずか（1%未満）で、赤ちゃんへの安全性は確立されています。無理に母乳を止める必要はありませんので、安心してお母さんの治療を優先してくださいね。」
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log('[PWA] ServiceWorker registered:', reg.scope))
+      .catch(err => console.log('[PWA] ServiceWorker registration failed:', err));
+  });
+}
+</script>
+
+</body>
+</html>

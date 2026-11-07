@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <script src="auth-guard.js"></script>
+  <meta charset="UTF-8">
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0284c7">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="医薬品890">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+  <title>長期収載品の選定療養＆後発品変更不可・患者自己負担完全実務マニュアル - 医薬品890品目 添付文書実務パッケージ</title>
+  <style>
+    :root {
+      --primary-color: #0d9488;
+      --primary-dark: #0f766e;
+      --primary-light: #ccfbf1;
+      --accent-color: #f59e0b;
+      --danger-color: #ef4444;
+      --text-dark: #1e293b;
+      --text-muted: #64748b;
+      --bg-slate: #f8fafc;
+      --border-color: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg-slate);
+      color: var(--text-dark);
+      line-height: 1.6;
+      padding-top: 56px;
+    }
+    .nav-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: #1e293b;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 0 16px;
+      gap: 16px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .nav-title {
+      font-weight: bold;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .nav-links {
+      display: flex;
+      gap: 8px;
+    }
+    .nav-btn {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.2s;
+    }
+    .nav-btn:hover {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+    }
+    .nav-btn.active {
+      background: var(--primary-color);
+      color: #fff;
+      border-color: var(--primary-color);
+      font-weight: bold;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 0 20px;
+    }
+    .header-banner {
+      background: linear-gradient(135deg, #0f766e, #115e59);
+      color: #fff;
+      padding: 24px 28px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(15,118,110,0.15);
+    }
+    .header-banner h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header-banner p {
+      font-size: 14px;
+      color: #ccfbf1;
+      line-height: 1.5;
+    }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      padding: 22px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    }
+    .card h2 {
+      font-size: 18px;
+      color: var(--primary-dark);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px solid var(--primary-light);
+      padding-bottom: 8px;
+    }
+    .card h3 {
+      font-size: 15px;
+      color: #334155;
+      margin: 16px 0 8px 0;
+    }
+    .badge-primary { background: #ccfbf1; color: #0f766e; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+    .badge-danger { background: #fee2e2; color: #991b1b; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+    .badge-warning { background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 10px 12px;
+      text-align: left;
+    }
+    th {
+      background: #f1f5f9;
+      color: #334155;
+      font-weight: 600;
+    }
+    .alert-box {
+      background: #f0fdfa;
+      border-left: 4px solid var(--primary-color);
+      padding: 14px 16px;
+      border-radius: 0 6px 6px 0;
+      margin: 14px 0;
+      font-size: 13px;
+    }
+    .danger-box {
+      background: #fef2f2;
+      border-left: 4px solid var(--danger-color);
+      padding: 14px 16px;
+      border-radius: 0 6px 6px 0;
+      margin: 14px 0;
+      font-size: 13px;
+    }
+    .script-box {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 14px 16px;
+      margin: 10px 0;
+      font-family: inherit;
+      font-size: 13px;
+    }
+    .script-speaker {
+      font-weight: bold;
+      color: #0f766e;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<header class="nav-bar">
+  <div class="nav-inner">
+    <div class="nav-title">
+      <span>💊</span> 医薬品890品目 添付文書実務パッケージ
+    </div>
+    <nav class="nav-links">
+      <a href="添付文書検索ビューア.html" class="nav-btn">🔍 添付文書検索ビューア</a>
+      <a href="災害時医療・BCP＆夜間休日輪番・備蓄医薬品管理完全実務マニュアル.html" class="nav-btn">🚨 災害時医療・BCP・夜間休日</a>
+      <a href="感染症・抗ウイルス薬・抗菌薬適正使用＆パキロビッド・ゾコーバ併用禁忌完全鑑査マニュアル.html" class="nav-btn">🦠 感染症・抗ウイルス・抗菌薬</a>
+      <a href="簡易懸濁法・錠剤粉砕・脱カプセル＆経管投与（胃瘻）適否完全実務マニュアル.html" class="nav-btn">🥣 簡易懸濁・粉砕・経管投与</a>
+      <a href="吸入指導加算・自己注射・特殊デバイス実技鑑査＆指導料算定完全実務マニュアル.html" class="nav-btn">💨 吸入指導＆自己注射</a>
+      <a href="長期収載品の選定療養＆後発品変更不可・患者自己負担完全実務マニュアル.html" class="nav-btn active">🏷️ 長期収載品・選定療養</a>
+      <a href="在宅訪問薬剤管理指導＆多職種連携（医師・ケアマネ報告書）完全実務マニュアル.html" class="nav-btn">🏠 在宅訪問＆多職種連携</a>
+      <a href="他科処方・広域処方鑑査＆門前外頻出薬・他院併用薬相互作用完全マニュアル.html" class="nav-btn">🏥 他科・広域処方鑑査</a>
+      <a href="薬歴記載（SOAP法）＆個別指導対策・指導料算定完全マニュアル.html" class="nav-btn">📑 薬歴SOAP＆個別指導対策</a>
+      <a href="疑義照会＆調剤過誤・ヒヤリハット防止・医療事故対策完全マニュアル.html" class="nav-btn">🚨 疑義照会＆調剤過誤防止</a>
+      <a href="高齢者・ポリファーマシー鑑査＆PTP誤飲・認知症・残薬調整完全マニュアル.html" class="nav-btn">👴 高齢者・ポリファーマシー</a>
+      <a href="妊婦・授乳婦・生殖年齢患者_添付文書禁忌＆授乳移行・胎児安全性完全マニュアル.html" class="nav-btn">🤰 妊婦・授乳婦・胎児安全性</a>
+      <a href="運転制限（禁止・注意・安全薬）＆適用上の注意・定期検査義務完全マニュアル.html" class="nav-btn">🚗 運転制限・適用注意・検査</a>
+      <a href="小児用量換算・禁忌＆透析・腎不全投与設計完全マニュアル.html" class="nav-btn">👶 小児・透析投与設計</a>
+      <a href="麻薬・覚醒剤原料・毒薬劇薬_法的適正管理＆薬事監視・事故届完全マニュアル.html" class="nav-btn">⚖️ 麻薬・法規管理</a>
+      <a href="ハイリスク薬管理指導＆保管・特殊手技・パニック値完全ガイド.html" class="nav-btn">⚡ ハイリスク薬・特殊管理</a>
+      <a href="処方鑑査＆保険請求_実務トラップ完全総まとめガイド.html" class="nav-btn">📑 処方鑑査・実務総まとめ</a>
+      <a href="配合剤vs単剤_適応症・用量上限・第一選択制限完全ガイド.html" class="nav-btn">💊 配合剤vs単剤ガイド</a>
+      <a href="同一成分・別商品名・規格違い_適応不一致完全ガイド.html" class="nav-btn">🔀 同一成分・別適応</a>
+      <a href="支払基金審査徹底対策_返戻査定防止＆公式審査事例完全マニュアル.html" class="nav-btn">⚖️ 支払基金審査対策</a>
+      <a href="併用薬・相互作用＆用法用量影響_添付文書完全ガイド.html" class="nav-btn">🔄 併用薬・用量影響</a>
+      <a href="臨床トラップ＆ハイリスク相互作用_添付文書完全ガイド.html" class="nav-btn">⚠️ 臨床トラップ23選</a>
+      <a href="保険請求査定防止＆添付文書実務ガイド.html" class="nav-btn">🛡️ 保険請求査定防止</a>
+      <a href="適応症・効能効果_厳格審査マニュアル.html" class="nav-btn">🎯 適応症・厳格審査</a>
+      <a href="適宜増減なし医薬品一覧_厳格用量マニュアル.html" class="nav-btn">📏 適宜増減なし263</a>
+      <a href="検査値用量調整_適正使用ガイド.html" class="nav-btn">🧪 検査値用量調整</a>
+      <a href="なぜ厳しい設定があるのか_医薬品適正使用と規制の歴史・医学的理由.html" class="nav-btn">📜 規制・医学的理由</a>
+      <button onclick="pharmaLogout()" class="nav-btn" style="background:#dc2626; color:#fff; border-color:#ef4444; margin-left:auto; cursor:pointer;">🔒 ログアウト</button>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+  <div class="header-banner">
+    <h1><span>🏷️</span> 長期収載品の選定療養＆後発品変更不可・患者自己負担 完全実務マニュアル</h1>
+    <p>
+      2024年10月施行の長期収載品（先発医薬品）選定療養制度。先発を希望する患者への「特別の料金（消費税課税）」の計算実務、
+      「医療上の理由」による変更不可の厳格鑑査、流通・出荷制限による除外要件、レセプト摘要欄記載、窓口トラブル防止トークまで完全網羅。
+    </p>
+  </div>
+
+  <!-- セクション1: 制度概要と対象医薬品基準 -->
+  <div class="card">
+    <h2><span>⚖️</span> 1. 長期収載品の選定療養 制度の根本ルール</h2>
+    <p style="font-size:13px; color:#475569; margin-bottom:12px;">
+      長期収載品（後発医薬品のある先発医薬品）について、患者が先発医薬品を希望した場合は、**「特別の料金」**として後発品最高価格との差額の4分の1相当を患者が全額自己負担（保険給付外・消費税課税）する制度です。
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:25%;">区分</th>
+          <th>対象医薬品の算定要件・基準</th>
+          <th>実務上の重要留意事項</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>対象となる長期収載品</strong></td>
+          <td>
+            ① 後発医薬品の上市後<strong>5年以上経過</strong>した長期収載品<br>
+            ② 後発医薬品の上市後5年未満であっても、<strong>後発品置換率が50％以上</strong>の長期収載品
+          </td>
+          <td>
+            厚生労働省が定める対象品目リスト（約1,000品目以上）に指定されたものが対象。バイオ後続品（バイオシミラー）のあるバイオ医薬品は当面対象外。
+          </td>
+        </tr>
+        <tr>
+          <td><strong>選定療養から除外されるケース<br><span class="badge-primary">保険給付のみ（負担増なし）</span></strong></td>
+          <td>
+            <strong>① 医療上の必要性がある場合：</strong><br>
+            ・医師・歯科医師が「医療上の必要性がある」と判断して後発医薬品への変更不可とした場合。<br>
+            ・薬剤師が調剤時の薬学的知見に基づき、医療上の必要性から先発品の調剤が必要と判断した場合（疑義照会等）。<br>
+            <strong>② 薬局の後発品在庫不足：</strong><br>
+            ・薬局に後発医薬品の在庫がなく、流通上の理由（出荷調整・限定出荷・供給停止）等で後発品を提供できない場合。
+          </td>
+          <td>
+            薬局在庫がない場合でも、患者自らが「在庫があってもなくても先発がいい」と希望した場合は選定療養対象となるため、患者の真意の確認が極めて重要。
+          </td>
+        </tr>
+        <tr>
+          <td><strong>公費負担医療との関係<br><span class="badge-danger">公費対象外（自己負担発生）</span></strong></td>
+          <td>
+            生活保護、指定難病、自立支援医療、こども医療費助成等の<strong>公費負担医療受給者であっても、患者希望で先発品を選択した場合は「特別の料金」の自己負担が発生</strong>する。
+          </td>
+          <td>
+            「公費だから窓口ゼロ円」と思っていた患者から最も苦情・トラブルが発生しやすい。事前の丁寧な説明が必須。
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- セクション2: 特別の料金の計算ロジック -->
+  <div class="card">
+    <h2><span>🧮</span> 2. 「特別の料金」の計算方式＆患者負担の仕組み</h2>
+    <div class="alert-box">
+      <strong>【特別の料金（患者負担）の計算式】</strong><br>
+      特別の料金 ＝ （ 長期収載品の薬価 － 後発医薬品の最高価格帯の薬価 ） × <strong>1／4</strong> × 数量 ＋ <strong>消費税（10%）</strong><br>
+      ※ 残りの 3／4 相当額＋後発品薬価分は保険給付対象となり、患者の一部負担金（1〜3割）が適用されます。
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>計算ステップ</th>
+          <th>具体例（先発薬価 100円、後発品最高薬価 40円、1日1錠 30日処方、3割負担の場合）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>① 単価差額の算出</strong></td>
+          <td>先発（100円） － 後発最高価格（40円） ＝ <strong>差額 60円</strong></td>
+        </tr>
+        <tr>
+          <td><strong>② 特別の料金（税抜）</strong></td>
+          <td>60円 × 1/4 ＝ <strong>15円 / 錠</strong>（30日分 ＝ 450円）</td>
+        </tr>
+        <tr>
+          <td><strong>③ 特別の料金（税込）</strong></td>
+          <td>450円 × 1.10 ＝ <strong>495円</strong>【選定療養・全額患者負担】</td>
+        </tr>
+        <tr>
+          <td><strong>④ 保険給付対象額</strong></td>
+          <td>100円 － 15円 ＝ <strong>85円 / 錠</strong>（30日分 ＝ 2,550円）</td>
+        </tr>
+        <tr>
+          <td><strong>⑤ 保険の一部負担金（3割）</strong></td>
+          <td>2,550円 × 0.3 ＝ <strong>765円</strong>（※調剤報酬点数は別途加算）</td>
+        </tr>
+        <tr>
+          <td><strong>★ 窓口合計支払額</strong></td>
+          <td>一部負担金（765円） ＋ 特別の料金（495円） ＝ <strong>1,260円</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- セクション3: 医療上の必要性の鑑査とレセプト記載 -->
+  <div class="card">
+    <h2><span>🩺</span> 3. 「医療上の理由」による変更不可 鑑査基準＆個別指導対策</h2>
+    <p style="font-size:13px; color:#475569; margin-bottom:12px;">
+      処方箋の「変更不可」欄にチェックがあり「保険医署名」がある場合、すべてが無条件で選定療養除外（保険給付）になるわけではありません。厚生局・支払基金の個別指導において、<strong>「医学的妥当性のある理由」</strong>が厳格に問われます。
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:25%;">変更不可の正当な医学的理由</th>
+          <th>具体例と添付文書上の根拠</th>
+          <th>レセプト摘要欄記載・薬歴への残し方</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>① アレルギー・重篤な副作用歴</strong></td>
+          <td>
+            過去に特定の後発医薬品の添加物（乳糖、着色料等）により発疹、蕁麻疹、ショック等のアレルギー歴がある場合。
+          </td>
+          <td>
+            「後発品添加物によるアレルギー既往のため先発品指定」と薬歴記載。レセプトに「医療上の必要性（アレルギー既往）」を選択。
+          </td>
+        </tr>
+        <tr>
+          <td><strong>② 治療効果の不十分・病状変化</strong></td>
+          <td>
+            過去に後発医薬品に変更した際、主症状（てんかん発作、不整脈、血圧、血糖、精神症状等）が悪化し、先発品に戻して再安定した経緯がある場合。
+          </td>
+          <td>
+            「過去の後発品切り替え時に病状悪化・コントロール不良を認めたため医師指示」と記載。
+          </td>
+        </tr>
+        <tr>
+          <td><strong>③ 適応症・効能効果の不一致</strong></td>
+          <td>
+            先発医薬品と後発医薬品で特許や再審査期間の違いにより、<strong>保険適応症が一部異なる場合</strong>（先発にしか認められていない適応症で治療を行っている場合）。
+          </td>
+          <td>
+            「当該適応症（○○病）は後発医薬品に適応がないため先発品調剤」と記載。
+          </td>
+        </tr>
+        <tr>
+          <td><strong>④ 剤形・使用感・嚥下の差</strong></td>
+          <td>
+            先発品と後発品で錠剤の大きさ、味、崩壊性、吸入器・点眼容器の構造が異なり、嚥下困難や誤嚥リスク、手技不適による吸入・点眼不能が生じる場合。
+          </td>
+          <td>
+            単に「患者が嫌がった」ではなく、「嚥下機能低下・誤嚥防止のため小粒径の先発品が必須」など医学的理由を薬歴に明記。
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="danger-box">
+      <strong>⚠️ 個別指導での返還金トラップ（NG事例）</strong><br>
+      ・医師の処方箋備考欄に「患者希望のため先発指定」と書かれているのに、医療上の必要性として保険請求した場合（即座に返還・是正対象）。<br>
+      ・「全例変更不可」として全患者に機械的にチェックを入れている医療機関の処方箋（薬局側からの確認・疑義照会が必要）。
+    </div>
+  </div>
+
+  <!-- セクション4: 薬局在庫・流通制限時の実務対応 -->
+  <div class="card">
+    <h2><span>📦</span> 4. 薬局在庫不足・出荷調整時の対応フロー</h2>
+    <p style="font-size:13px; color:#475569; margin-bottom:12px;">
+      医薬品の供給不足が続く中、薬局に後発品の在庫がない場合の選定療養判断は極めて厳格に規定されています。
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>状況</th>
+          <th>選定療養の適否</th>
+          <th>実務対応・レセプト記載要領</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>流通上の理由で後発品が入手困難</strong><br>（限定出荷・出荷停止・卸在庫欠品）</td>
+          <td><strong style="color:#059669;">選定療養の対象外</strong><br>（保険給付・患者追加負担なし）</td>
+          <td>
+            ・薬局に後発医薬品の備蓄がなく、卸への発注でも手配できない場合。<br>
+            ・レセプト摘要欄に「後発医薬品の流通上の理由（供給不足）」を選択・記載。<br>
+            ・薬歴に「後発品卸欠品のため先発品調剤」と記録。
+          </td>
+        </tr>
+        <tr>
+          <td><strong>薬局が単に通常在庫していないだけ</strong><br>（流通は正常・卸には在庫あり）</td>
+          <td><strong style="color:#dc2626;">原則、選定療養対象または手配</strong></td>
+          <td>
+            ・卸に在庫がある場合は、可能な限り後発品を取り寄せて調剤するのが基本方針。<br>
+            ・患者が「取り寄せを待たずに今すぐ先発でほしい」と自ら希望した場合は【患者希望による選定療養】となる。
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- セクション5: 窓口トラブル防止トークスクリプト＆Q&A -->
+  <div class="card">
+    <h2><span>🗣️</span> 5. 窓口での患者説明トークスクリプト＆トラブル防止Q&A</h2>
+
+    <h3>ケース1：これまで先発品を飲んでいて「自己負担が増える」ことに驚いた患者への説明</h3>
+    <div class="script-box">
+      <div class="script-speaker">💊 薬剤師の標準トーク：</div>
+      「○○さん、いつもお出ししているお薬（例：アムロジン錠）について、国（厚生労働省）の医療保険制度が変わりまして大切なお知らせがございます。<br>
+      2024年10月から、同じ効果の後発医薬品（ジェネリック）がある先発のお薬をご希望される場合、<strong>お薬代の一部（差額の4分の1相当＋消費税）が国の定めた『特別の料金』として保険がきかず、自己負担に追加</strong>されることになりました。<br>
+      もし、国が推奨する同じ成分・同じ効果の後発医薬品（アムロジピン錠）に変更していただければ、この追加負担は一切かからず、これまで通り（またはさらにお安く）お受け取りいただけます。本日はどちらになさいますか？」
+    </div>
+
+    <h3>ケース2：公費負担（難病・自立支援・子ども医療費等）をお持ちの患者への説明</h3>
+    <div class="script-box">
+      <div class="script-speaker">💊 薬剤師の標準トーク：</div>
+      「○○様は公費受給者証（または子ども医療証）をお持ちですので、通常の保険診療部分は窓口負担が軽減（または無料）されます。<br>
+      しかしながら、今回の国の制度では、<strong>『先発医薬品をご自身のご希望で選択された場合の特別の料金』は公費負担の対象外（全額患者様の自己負担）</strong>と法律で定められております。<br>
+      完全に窓口負担を無料（または公費上限内）に抑えるためには、ジェネリック医薬品へのお切り替えが必要となりますが、いかがなさいますでしょうか？」
+    </div>
+
+    <h3>トラブル防止 Q&A 3選</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:30%;">患者からの質問・苦情</th>
+          <th>回答方針と納得いただくポイント</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>「先生（医師）から何も聞いていない！」</td>
+          <td>
+            「大変恐れ入ります。医師の処方箋上は『ジェネリックへの変更が可能』な状態になっております。薬局の窓口で患者様ご自身にどちらにするか選んでいただく仕組みとなっておりますので、詳しくご説明させていただきますね。」
+          </td>
+        </tr>
+        <tr>
+          <td>「領収書に消費税が入っているのはなぜ？」</td>
+          <td>
+            「保険診療（一部負担金）には消費税はかかりませんが、今回の『先発医薬品の特別の料金』は保険外の『選定療養（実費）』に位置づけられているため、国の税法上、消費税10%をお預かりすることが義務付けられております。」
+          </td>
+        </tr>
+        <tr>
+          <td>「前回は先発でも追加料金を取られなかったのに、なぜ今回は取られるの？」</td>
+          <td>
+            「前回は後発医薬品がメーカー出荷停止で全国的に不足していたため、国の特例で追加料金がかかりませんでした。今回は後発医薬品の供給が再開されたため、先発品をご希望される場合は通常の制度通り追加料金が発生いたします。」
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log('[PWA] ServiceWorker registered:', reg.scope))
+      .catch(err => console.log('[PWA] ServiceWorker registration failed:', err));
+  });
+}
+</script>
+
+</body>
+</html>

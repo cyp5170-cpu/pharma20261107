@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <script src="auth-guard.js"></script>
+  <meta charset="UTF-8">
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0284c7">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="医薬品890">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>見逃しやすい臨床トラップ＆ハイリスク相互作用・添付文書完全ガイド</title>
+  <style>
+    :root {
+      --primary: #0f172a;
+      --secondary: #1e293b;
+      --accent: #2563eb;
+      --danger-fatal: #dc2626;
+      --danger-high: #ea580c;
+      --danger-med: #d97706;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Meiryo", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .header {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: white;
+      padding: 32px 40px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .nav-links { display: flex; gap: 8px; flex-wrap: wrap; }
+    .nav-btn {
+      padding: 6px 12px;
+      background: rgba(255,255,255,0.12);
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.28); transform: translateY(-1px); }
+    .header h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; display: flex; align-items: center; gap: 10px; }
+    .header p { font-size: 13.5px; opacity: 0.9; margin-top: 6px; }
+    
+    .container {
+      max-width: 1280px;
+      margin: 28px auto;
+      padding: 0 24px;
+    }
+
+    /* コントロールバー */
+    .controls {
+      background: white;
+      padding: 20px 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .search-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .search-input {
+      flex: 1;
+      padding: 12px 16px;
+      font-size: 14px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: var(--accent); }
+    .category-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 8px 14px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 20px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+      align-items: center;
+    }
+    .stats-badge {
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* カードグリッド */
+    .grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .trap-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .trap-card:hover {
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+    .card-header {
+      padding: 18px 24px;
+      background: #fafafa;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .trap-id {
+      font-weight: 800;
+      font-size: 16px;
+      color: white;
+      background: var(--secondary);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+    .card-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .card-badges {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.02em;
+    }
+    .badge-cat { background: #e0f2fe; color: #0369a1; }
+    .badge-danger-fatal { background: #fee2e2; color: #dc2626; border: 1px solid #f87171; }
+    .badge-danger-high { background: #ffedd5; color: #ea580c; border: 1px solid #fb923c; }
+    .badge-danger-med { background: #fef3c7; color: #d97706; border: 1px solid #fcd34d; }
+    .badge-miss { background: #f1f5f9; color: #475569; }
+    .badge-sec { background: #e2e8f0; color: #334155; font-family: monospace; }
+
+    .card-body {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 900px) {
+      .card-body { grid-template-columns: 1fr; }
+    }
+    .section-block {
+      background: #f8fafc;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid #edf2f7;
+    }
+    .section-title {
+      font-size: 12.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sec-drugs { color: #475569; }
+    .sec-scenario { color: #b45309; }
+    .sec-mechanism { color: #0369a1; }
+    .sec-consequence { color: #b91c1c; }
+    .sec-defense { color: #15803d; }
+
+    .section-content {
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: #334155;
+    }
+    .consequence-box {
+      grid-column: span 2;
+      background: #fff5f5;
+      border: 1.5px solid #fed7d7;
+      border-radius: 8px;
+      padding: 16px;
+    }
+    @media (max-width: 900px) {
+      .consequence-box { grid-column: span 1; }
+    }
+    .defense-box {
+      grid-column: span 2;
+      background: #f0fdf4;
+      border: 1.5px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 16px;
+    }
+    @media (max-width: 900px) {
+      .defense-box { grid-column: span 1; }
+    }
+
+    .card-footer {
+      padding: 12px 24px;
+      background: #f8fafc;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+
+<style id="common-nav-styles">
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #e2e8f0;
+    padding: 8px 16px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  }
+  .nav-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .nav-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #4f46e5;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 9px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #334155;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+  .nav-btn:hover {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-color: #3b82f6;
+  }
+  .nav-btn.active {
+    background: #4f46e5;
+    color: #fff !important;
+    border-color: #4f46e5 !important;
+  }
+</style>
+
+</head>
+<body>
+
+  <header class="header">
+  <script src="auth-guard.js"></script>
+    <div class="header-top">
+      <div>
+        <h1>⚠️ 見逃しやすい臨床トラップ＆ハイリスク相互作用 完全ガイド</h1>
+        <p>〜他科受診・日常習慣・併用薬で見落とされる重大事故・禁忌・査定リスク23選〜</p>
+      </div>
+                                  <header class="nav-bar">
+  <div class="nav-inner">
+    <div class="nav-title">
+      <span>💊</span> 医薬品890品目 添付文書実務パッケージ
+    </div>
+    <nav class="nav-links">
+      <a href="添付文書検索ビューア.html" class="nav-btn">🔍 添付文書検索ビューア</a>
+      <a href="災害時医療・BCP＆夜間休日輪番・備蓄医薬品管理完全実務マニュアル.html" class="nav-btn">🚨 災害時医療・BCP・夜間休日</a>
+      <a href="感染症・抗ウイルス薬・抗菌薬適正使用＆パキロビッド・ゾコーバ併用禁忌完全鑑査マニュアル.html" class="nav-btn">🦠 感染症・抗ウイルス・抗菌薬</a>
+      <a href="簡易懸濁法・錠剤粉砕・脱カプセル＆経管投与（胃瘻）適否完全実務マニュアル.html" class="nav-btn">🥣 簡易懸濁・粉砕・経管投与</a>
+      <a href="吸入指導加算・自己注射・特殊デバイス実技鑑査＆指導料算定完全実務マニュアル.html" class="nav-btn">💨 吸入指導＆自己注射</a>
+      <a href="長期収載品の選定療養＆後発品変更不可・患者自己負担完全実務マニュアル.html" class="nav-btn">🏷️ 長期収載品・選定療養</a>
+      <a href="在宅訪問薬剤管理指導＆多職種連携（医師・ケアマネ報告書）完全実務マニュアル.html" class="nav-btn">🏠 在宅訪問＆多職種連携</a>
+      <a href="他科処方・広域処方鑑査＆門前外頻出薬・他院併用薬相互作用完全マニュアル.html" class="nav-btn">🏥 他科・広域処方鑑査</a>
+      <a href="薬歴記載（SOAP法）＆個別指導対策・指導料算定完全マニュアル.html" class="nav-btn">📑 薬歴SOAP＆個別指導対策</a>
+      <a href="疑義照会＆調剤過誤・ヒヤリハット防止・医療事故対策完全マニュアル.html" class="nav-btn">🚨 疑義照会＆調剤過誤防止</a>
+      <a href="高齢者・ポリファーマシー鑑査＆PTP誤飲・認知症・残薬調整完全マニュアル.html" class="nav-btn">👴 高齢者・ポリファーマシー</a>
+      <a href="妊婦・授乳婦・生殖年齢患者_添付文書禁忌＆授乳移行・胎児安全性完全マニュアル.html" class="nav-btn">🤰 妊婦・授乳婦・胎児安全性</a>
+      <a href="運転制限（禁止・注意・安全薬）＆適用上の注意・定期検査義務完全マニュアル.html" class="nav-btn">🚗 運転制限・適用注意・検査</a>
+      <a href="小児用量換算・禁忌＆透析・腎不全投与設計完全マニュアル.html" class="nav-btn">👶 小児・透析投与設計</a>
+      <a href="麻薬・覚醒剤原料・毒薬劇薬_法的適正管理＆薬事監視・事故届完全マニュアル.html" class="nav-btn">⚖️ 麻薬・法規管理</a>
+      <a href="ハイリスク薬管理指導＆保管・特殊手技・パニック値完全ガイド.html" class="nav-btn">⚡ ハイリスク薬・特殊管理</a>
+      <a href="処方鑑査＆保険請求_実務トラップ完全総まとめガイド.html" class="nav-btn">📑 処方鑑査・実務総まとめ</a>
+      <a href="配合剤vs単剤_適応症・用量上限・第一選択制限完全ガイド.html" class="nav-btn">💊 配合剤vs単剤ガイド</a>
+      <a href="同一成分・別商品名・規格違い_適応不一致完全ガイド.html" class="nav-btn">🔀 同一成分・別適応</a>
+      <a href="支払基金審査徹底対策_返戻査定防止＆公式審査事例完全マニュアル.html" class="nav-btn">⚖️ 支払基金審査対策</a>
+      <a href="併用薬・相互作用＆用法用量影響_添付文書完全ガイド.html" class="nav-btn">🔄 併用薬・用量影響</a>
+      <a href="臨床トラップ＆ハイリスク相互作用_添付文書完全ガイド.html" class="nav-btn active">⚠️ 臨床トラップ23選</a>
+      <a href="保険請求査定防止＆添付文書実務ガイド.html" class="nav-btn">🛡️ 保険請求査定防止</a>
+      <a href="適応症・効能効果_厳格審査マニュアル.html" class="nav-btn">🎯 適応症・厳格審査</a>
+      <a href="適宜増減なし医薬品一覧_厳格用量マニュアル.html" class="nav-btn">📏 適宜増減なし263</a>
+      <a href="検査値用量調整_適正使用ガイド.html" class="nav-btn">🧪 検査値用量調整</a>
+      <a href="なぜ厳しい設定があるのか_医薬品適正使用と規制の歴史・医学的理由.html" class="nav-btn">📜 規制・医学的理由</a>
+      <button onclick="pharmaLogout()" class="nav-btn" style="background:#dc2626; color:#fff; border-color:#ef4444; margin-left:auto; cursor:pointer;">🔒 ログアウト</button>
+    </nav>
+  </div>
+</header>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="controls">
+      <div class="search-row">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 薬品名・病名・機序・症状（例: リーマス、機械弁、アスピリン喘息、キレート、造影剤、横紋筋融解症...）を入力してリアルタイム絞り込み">
+      </div>
+      <div class="category-tabs" id="categoryTabs">
+        <button class="tab-btn active" data-cat="all">すべて表示 (23)</button>
+        <button class="tab-btn" data-cat="併用禁忌・絶対的禁忌">🚨 併用禁忌・絶対的禁忌 (5)</button>
+        <button class="tab-btn" data-cat="他科受診・日常薬の盲点">🏥 他科受診・日常薬の盲点 (5)</button>
+        <button class="tab-btn" data-cat="患者の服用習慣・誤認">💊 服用習慣・誤認 (3)</button>
+        <button class="tab-btn" data-cat="隠れた合併症・潜在リスク">⚠️ 隠れた合併症・既往症 (6)</button>
+        <button class="tab-btn" data-cat="多剤併用・代謝酵素の相互作用">🧬 多剤併用・代謝酵素 (4)</button>
+      </div>
+      <div class="stats-bar">
+        <span>表示中: <strong class="stats-badge" id="visibleCount">23</strong> 件 / 全 23 件</span>
+        <span>｜ 💡 カード内の薬品名や機序から瞬時に鑑査ポイントを確認できます。</span>
+      </div>
+    </section>
+
+    <div class="grid" id="trapsGrid">
+
+      <article class="trap-card" data-category="併用禁忌・絶対的禁忌" data-text="硝酸薬（ニトロペン・アイトロール等） × PDE5阻害薬（バイアグラ・シアリス・レバチオ等） ニトログリセリン、硝酸イソソルビド、ニコランジル、シルデナフィル、タダラフィル、バルデナフィル 狭心症でニトログリセリンを携帯している男性患者が、ED治療薬（バイアグラ・シアリス）を自由診療で入手して服用。あるいは肺高血圧症でレバチオを服用中の患者に胸痛発作時ニトロペンが処方される。 硝酸薬は一酸化窒素（NO）を遊離してcGMPを増加させ、血管を拡張させる。PDE5阻害薬はcGMPを分解する酵素を特異的にブロックする。両者が合わさると細胞内cGMPが爆発的に蓄積し、全身の末梢血管が極限まで弛緩する。 急激かつ重篤な血圧低下、一過性の血流虚脱（ショック状態）、冠血流低下による致死的不整脈・心筋梗塞、死亡事故が世界中で多数報告され添付文書【警告・併用禁忌】指定。 狭心症患者・心疾患患者への問診では「ED治療薬の自由診療服用」や「肺高血圧症薬」の有無を必ず確認。ニトログリセリン服薬指導時は『バイアグラ等を飲んでいるときは絶対にニトロを使ってはならない』と念押しする。 2. 禁忌 / 10.1 併用禁忌">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">1</span>
+            <h2 class="card-title">硝酸薬（ニトロペン・アイトロール等） × PDE5阻害薬（バイアグラ・シアリス・レバチオ等）</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">併用禁忌・絶対的禁忌</span>
+            <span class="badge danger-fatal">危険度: 致死</span>
+            <span class="badge badge-miss">見逃し度: ★★★☆☆</span>
+            <span class="badge badge-sec">項: 2. 禁忌 / 10.1 併用禁忌</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>ニトログリセリン、硝酸イソソルビド、ニコランジル、シルデナフィル、タダラフィル、バルデナフィル</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">狭心症でニトログリセリンを携帯している男性患者が、ED治療薬（バイアグラ・シアリス）を自由診療で入手して服用。あるいは肺高血圧症でレバチオを服用中の患者に胸痛発作時ニトロペンが処方される。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">硝酸薬は一酸化窒素（NO）を遊離してcGMPを増加させ、血管を拡張させる。PDE5阻害薬はcGMPを分解する酵素を特異的にブロックする。両者が合わさると細胞内cGMPが爆発的に蓄積し、全身の末梢血管が極限まで弛緩する。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>急激かつ重篤な血圧低下、一過性の血流虚脱（ショック状態）、冠血流低下による致死的不整脈・心筋梗塞、死亡事故が世界中で多数報告され添付文書【警告・併用禁忌】指定。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">狭心症患者・心疾患患者への問診では「ED治療薬の自由診療服用」や「肺高血圧症薬」の有無を必ず確認。ニトログリセリン服薬指導時は『バイアグラ等を飲んでいるときは絶対にニトロを使ってはならない』と念押しする。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>2. 禁忌 / 10.1 併用禁忌</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="併用禁忌・絶対的禁忌" data-text="DOAC（ダビガトラン・リクシアナ等） × 機械弁置換術後患者 プラザキサ、リクシアナ、エリキュース、イグザレルト、ワーファリン 「心房細動の脳塞栓予防＝DOAC」という現代の感覚から、心臓弁膜症の手術歴がある患者に対して採血管理の不要なDOACへの切り替えや新規投与を行ってしまう。 人工機械弁（カーボンやチタン等の異物）の表面に血液が触れると、接触活性化系（第XII因子、内因系）が爆発的に活性化する。DOACはトロンビン（IIa）または第Xa因子という下流の単一因子しか阻害しないため、強烈な内因系凝固カスケードを突破される。ワルファリンはビタミンK依存性の4因子（II, VII, IX, X）を一括阻害するため完全に制圧できる。 国際臨床試験（RE-ALIGN試験）でダビガトラン群が機械弁血栓症、脳梗塞、致死的大出血を多発させ緊急中止。DOACは機械弁に対して絶対禁忌。機械弁にはワーファリン以外絶対不可。 DOAC処方時は「弁置換術歴」の有無を必ず確認。「生体弁」は術後早期を除き使用可能だが、「機械弁」は100%ワーファリン縛り。適応症の『非弁膜症性心房細動（NVAF）』の定義厳守。 4. 効能又は効果に関連する注意 / 2. 禁忌">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">2</span>
+            <h2 class="card-title">DOAC（ダビガトラン・リクシアナ等） × 機械弁置換術後患者</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">併用禁忌・絶対的禁忌</span>
+            <span class="badge danger-fatal">危険度: 致死</span>
+            <span class="badge badge-miss">見逃し度: ★★★★☆</span>
+            <span class="badge badge-sec">項: 4. 効能又は効果に関連する注意 / 2. 禁忌</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>プラザキサ、リクシアナ、エリキュース、イグザレルト、ワーファリン</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">「心房細動の脳塞栓予防＝DOAC」という現代の感覚から、心臓弁膜症の手術歴がある患者に対して採血管理の不要なDOACへの切り替えや新規投与を行ってしまう。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">人工機械弁（カーボンやチタン等の異物）の表面に血液が触れると、接触活性化系（第XII因子、内因系）が爆発的に活性化する。DOACはトロンビン（IIa）または第Xa因子という下流の単一因子しか阻害しないため、強烈な内因系凝固カスケードを突破される。ワルファリンはビタミンK依存性の4因子（II, VII, IX, X）を一括阻害するため完全に制圧できる。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>国際臨床試験（RE-ALIGN試験）でダビガトラン群が機械弁血栓症、脳梗塞、致死的大出血を多発させ緊急中止。DOACは機械弁に対して絶対禁忌。機械弁にはワーファリン以外絶対不可。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">DOAC処方時は「弁置換術歴」の有無を必ず確認。「生体弁」は術後早期を除き使用可能だが、「機械弁」は100%ワーファリン縛り。適応症の『非弁膜症性心房細動（NVAF）』の定義厳守。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>4. 効能又は効果に関連する注意 / 2. 禁忌</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="併用禁忌・絶対的禁忌" data-text="カリウム保持性利尿薬（スピロノラクトン等） × カリウム製剤（アスパラカリウム等） アルダクトンA（スピロノラクトン）、セララ（エプレレノン）、アスパラカリウム、ケーサプライ 心不全や肝硬変の浮腫で利尿薬を調整する過程で、フロセミド（ラシックス）による低K血症を補正するために処方されたアスパラカリウムが、アルダクトン追加後も中止されずに漫然と継続される。 アルダクトンは遠位尿細管・皮質集合管のアルドステロン受容体を遮断し、Na+排泄・K+再吸収を促す（Kを逃がさない）。そこに経口カリウム製剤を補充し続けると、体内にカリウムが急速に蓄積する。 血清カリウム値が7.0 mEq/Lを超え、テント状T波、QRS幅延長、心室細動（Vf）、心停止に至る。添付文書【禁忌】指定。 スピロノラクトン・エプレレノンが処方されている患者にカリウム製剤が出ていたら即座に疑義照会。血清K値の定期的モニタリングを義務付け。 2. 禁忌 / 10.1 併用禁忌">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">3</span>
+            <h2 class="card-title">カリウム保持性利尿薬（スピロノラクトン等） × カリウム製剤（アスパラカリウム等）</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">併用禁忌・絶対的禁忌</span>
+            <span class="badge danger-fatal">危険度: 致死</span>
+            <span class="badge badge-miss">見逃し度: ★★★☆☆</span>
+            <span class="badge badge-sec">項: 2. 禁忌 / 10.1 併用禁忌</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>アルダクトンA（スピロノラクトン）、セララ（エプレレノン）、アスパラカリウム、ケーサプライ</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">心不全や肝硬変の浮腫で利尿薬を調整する過程で、フロセミド（ラシックス）による低K血症を補正するために処方されたアスパラカリウムが、アルダクトン追加後も中止されずに漫然と継続される。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">アルダクトンは遠位尿細管・皮質集合管のアルドステロン受容体を遮断し、Na+排泄・K+再吸収を促す（Kを逃がさない）。そこに経口カリウム製剤を補充し続けると、体内にカリウムが急速に蓄積する。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>血清カリウム値が7.0 mEq/Lを超え、テント状T波、QRS幅延長、心室細動（Vf）、心停止に至る。添付文書【禁忌】指定。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">スピロノラクトン・エプレレノンが処方されている患者にカリウム製剤が出ていたら即座に疑義照会。血清K値の定期的モニタリングを義務付け。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>2. 禁忌 / 10.1 併用禁忌</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="併用禁忌・絶対的禁忌" data-text="ワルファリン × 納豆・クロレラ・青汁（ビタミンK高含有食品） ワーファリン（ワルファリンカリウム） 心房細動や人工弁でワルファリンを内服中の患者が、「健康維持や血液サラサラのため」と良かれと思って毎朝納豆を食べたり、通販の青汁・クロレラサプリを飲み始める。 ワルファリンは肝臓でビタミンKエポキシド還元酵素を阻害し、凝固因子（II, VII, IX, X）の合成を止める。納豆菌（Bacillus subtilis natto）は腸内に定着すると自らビタミンK2（メナキノン-7）を数日間にわたって大量合成し続ける。これによりワルファリンの阻害が完全に相殺される。 PT-INR値が正常値（1.0付近）まで急落し、抗凝固効果が完全消失。左心耳や機械弁に巨大血栓が急速に形成され、太い主幹動脈閉塞によるノックアウト型脳梗塞を発症する。 「納豆はたった1パックでも数日間効果を消す」ことを初回投薬時に徹底指導。青汁、クロレラ、モロヘイヤ、パセリなどの大量摂取も禁止。 8. 重要な基本的注意 / 10. 相互作用">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">4</span>
+            <h2 class="card-title">ワルファリン × 納豆・クロレラ・青汁（ビタミンK高含有食品）</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">併用禁忌・絶対的禁忌</span>
+            <span class="badge danger-high">危険度: 重篤</span>
+            <span class="badge badge-miss">見逃し度: ★★★☆☆</span>
+            <span class="badge badge-sec">項: 8. 重要な基本的注意 / 10. 相互作用</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>ワーファリン（ワルファリンカリウム）</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">心房細動や人工弁でワルファリンを内服中の患者が、「健康維持や血液サラサラのため」と良かれと思って毎朝納豆を食べたり、通販の青汁・クロレラサプリを飲み始める。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">ワルファリンは肝臓でビタミンKエポキシド還元酵素を阻害し、凝固因子（II, VII, IX, X）の合成を止める。納豆菌（Bacillus subtilis natto）は腸内に定着すると自らビタミンK2（メナキノン-7）を数日間にわたって大量合成し続ける。これによりワルファリンの阻害が完全に相殺される。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>PT-INR値が正常値（1.0付近）まで急落し、抗凝固効果が完全消失。左心耳や機械弁に巨大血栓が急速に形成され、太い主幹動脈閉塞によるノックアウト型脳梗塞を発症する。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">「納豆はたった1パックでも数日間効果を消す」ことを初回投薬時に徹底指導。青汁、クロレラ、モロヘイヤ、パセリなどの大量摂取も禁止。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>8. 重要な基本的注意 / 10. 相互作用</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="併用禁忌・絶対的禁忌" data-text="エンレスト（サクビトリルバルサルタン）切り替え時 × ACE阻害薬のウォッシュアウト不足 エンレスト、レニベース、コバシル、タナトリル、ゼストリル等 心不全患者で、ACE阻害薬（エナラプリル等）から心不全治療の標準薬エンレストへ切り替える際、前日夕までACE阻害薬を飲ませ、翌朝からエンレストを開始してしまう。 サクビトリルはネプリライシンを阻害し、ACE阻害薬はキニナーゼII（ACE）を阻害する。両酵素とも気道・粘膜の血管拡張ペプチドである「ブラジキニン」を分解する主要経路。両方が同時にブロックされると血中・局所のブラジキニン濃度が天文学的に跳ね上がる。 急激な喉頭浮腫・気道浮腫（血管性浮腫）が発生し、声門が閉塞して急速に窒息死に至る。添付文書【禁忌】。切り替え時は**「36時間」**の完全休薬期間（ウォッシュアウト）が必須。 ACE阻害薬からエンレストへの処方変更を見たら、直ちに前回服薬日時を確認し、36時間以上の間隔が確保されているかを厳格鑑査。 2. 禁忌 / 7. 用法及び用量に関連する注意">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">5</span>
+            <h2 class="card-title">エンレスト（サクビトリルバルサルタン）切り替え時 × ACE阻害薬のウォッシュアウト不足</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">併用禁忌・絶対的禁忌</span>
+            <span class="badge danger-fatal">危険度: 致死</span>
+            <span class="badge badge-miss">見逃し度: ★★★★☆</span>
+            <span class="badge badge-sec">項: 2. 禁忌 / 7. 用法及び用量に関連する注意</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>エンレスト、レニベース、コバシル、タナトリル、ゼストリル等</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">心不全患者で、ACE阻害薬（エナラプリル等）から心不全治療の標準薬エンレストへ切り替える際、前日夕までACE阻害薬を飲ませ、翌朝からエンレストを開始してしまう。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">サクビトリルはネプリライシンを阻害し、ACE阻害薬はキニナーゼII（ACE）を阻害する。両酵素とも気道・粘膜の血管拡張ペプチドである「ブラジキニン」を分解する主要経路。両方が同時にブロックされると血中・局所のブラジキニン濃度が天文学的に跳ね上がる。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>急激な喉頭浮腫・気道浮腫（血管性浮腫）が発生し、声門が閉塞して急速に窒息死に至る。添付文書【禁忌】。切り替え時は**「36時間」**の完全休薬期間（ウォッシュアウト）が必須。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">ACE阻害薬からエンレストへの処方変更を見たら、直ちに前回服薬日時を確認し、36時間以上の間隔が確保されているかを厳格鑑査。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>2. 禁忌 / 7. 用法及び用量に関連する注意</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="他科受診・日常薬の盲点" data-text="炭酸リチウム（リーマス） × NSAIDs（ロキソニン・セレコックス等） リーマス（炭酸リチウム）、ロキソニン、ボルタレン、セレコックス、ナイキサン等 精神科でリーマスを長年安定して飲んでいる患者が、腰痛・変形性膝関節症で整形外科を受診、あるいは頭痛・発熱で一般内科を受診し、NSAIDsが安易に処方される。患者はお薬手帳を出さないか、痛み止めだからと気にせず併用。 リチウムはほぼ100%腎臓から排泄される。NSAIDsが腎臓のプロスタグランジン合成を阻害すると、輸入細動脈が収縮して腎血流量・GFRが低下。近位尿細管でのNa・水とともにリチウムの再吸収が過剰に亢進し、体外へ排泄されなくなる。 治療域（0.4〜1.2 mEq/L）と中毒域（1.5 mEq/L以上）が狭い劇薬のため、数日で血中濃度が急上昇。手の振戦、構音障害、運動失調、錯乱、痙攣、昏睡、急性腎不全を起こし、小脳萎縮による不可逆的後遺症や中毒死に至る。 リーマス服用患者の解熱鎮痛には、腎血流を障害しない「アセトアミノフェン（カロナール）」を第一選択とする。NSAIDs処方時は即座に疑義照会。 10.2 併用注意 / 8. 重要な基本的注意">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">6</span>
+            <h2 class="card-title">炭酸リチウム（リーマス） × NSAIDs（ロキソニン・セレコックス等）</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">他科受診・日常薬の盲点</span>
+            <span class="badge danger-fatal">危険度: 致死</span>
+            <span class="badge badge-miss">見逃し度: ★★★★★</span>
+            <span class="badge badge-sec">項: 10.2 併用注意 / 8. 重要な基本的注意</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>リーマス（炭酸リチウム）、ロキソニン、ボルタレン、セレコックス、ナイキサン等</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">精神科でリーマスを長年安定して飲んでいる患者が、腰痛・変形性膝関節症で整形外科を受診、あるいは頭痛・発熱で一般内科を受診し、NSAIDsが安易に処方される。患者はお薬手帳を出さないか、痛み止めだからと気にせず併用。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">リチウムはほぼ100%腎臓から排泄される。NSAIDsが腎臓のプロスタグランジン合成を阻害すると、輸入細動脈が収縮して腎血流量・GFRが低下。近位尿細管でのNa・水とともにリチウムの再吸収が過剰に亢進し、体外へ排泄されなくなる。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>治療域（0.4〜1.2 mEq/L）と中毒域（1.5 mEq/L以上）が狭い劇薬のため、数日で血中濃度が急上昇。手の振戦、構音障害、運動失調、錯乱、痙攣、昏睡、急性腎不全を起こし、小脳萎縮による不可逆的後遺症や中毒死に至る。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">リーマス服用患者の解熱鎮痛には、腎血流を障害しない「アセトアミノフェン（カロナール）」を第一選択とする。NSAIDs処方時は即座に疑義照会。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>10.2 併用注意 / 8. 重要な基本的注意</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="他科受診・日常薬の盲点" data-text="バイアスピリン（抗血小板） × イブプロフェン等（市販解熱鎮痛薬含む） バイアスピリン、イブプロフェン（市販イブ、ブルフェン等） 狭心症ステント留置後や脳梗塞既往でバイアスピリンを飲んでいる患者が、頭痛や生理痛、風邪熱でドラッグストアで市販の「イブ」を購入して併用する。 アスピリンは血小板のCOX-1活性中心（Ser529）を不可逆的にアセチル化してトロンボキサンA2産生を永続的に遮断する。しかし、イブプロフェンが先に（または同時に）存在すると、COX-1のチャネル入口に可逆的に結合して蓋をしてしまい、アスピリンのアクセスを邪魔する。イブプロフェンが抜けたときにはアスピリンはすでに分解・排泄されている。 アスピリンの血小板凝集抑制作用がほぼゼロになり、冠動脈ステント閉塞やアテローム血栓性脳梗塞が再発する。 バイアスピリン服用患者への解熱鎮痛にはアセトアミノフェンを案内。市販薬の購入時にもイブプロフェン・ロキソプロフェンを避けるよう徹底指導。 10.2 併用注意">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">7</span>
+            <h2 class="card-title">バイアスピリン（抗血小板） × イブプロフェン等（市販解熱鎮痛薬含む）</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">他科受診・日常薬の盲点</span>
+            <span class="badge danger-high">危険度: 重篤</span>
+            <span class="badge badge-miss">見逃し度: ★★★★☆</span>
+            <span class="badge badge-sec">項: 10.2 併用注意</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>バイアスピリン、イブプロフェン（市販イブ、ブルフェン等）</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">狭心症ステント留置後や脳梗塞既往でバイアスピリンを飲んでいる患者が、頭痛や生理痛、風邪熱でドラッグストアで市販の「イブ」を購入して併用する。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">アスピリンは血小板のCOX-1活性中心（Ser529）を不可逆的にアセチル化してトロンボキサンA2産生を永続的に遮断する。しかし、イブプロフェンが先に（または同時に）存在すると、COX-1のチャネル入口に可逆的に結合して蓋をしてしまい、アスピリンのアクセスを邪魔する。イブプロフェンが抜けたときにはアスピリンはすでに分解・排泄されている。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>アスピリンの血小板凝集抑制作用がほぼゼロになり、冠動脈ステント閉塞やアテローム血栓性脳梗塞が再発する。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">バイアスピリン服用患者への解熱鎮痛にはアセトアミノフェンを案内。市販薬の購入時にもイブプロフェン・ロキソプロフェンを避けるよう徹底指導。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>10.2 併用注意</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="他科受診・日常薬の盲点" data-text="ニューキノロン／テトラサイクリン系 × マグミット・フェロミア（多価陽イオン） クラビット、ジェニナック、シプロキサン、ミノマイシン、ビブラマイシン、マグミット、フェロミア等 便秘で酸化マグネシウムを常用している高齢者や、貧血で鉄剤を飲んでいる女性が、感染症（気管支炎、膀胱炎、副鼻腔炎など）でキノロン系やミノマイシンを処方され、「朝食後」等で一緒にまとめて飲む。 ニューキノロン系やテトラサイクリン系のケト基・カルボキシ基が、2価・3価の金属イオン（Mg2+, Al3+, Fe2+/Fe3+, Ca2+）と強力なキレート（不溶性錯体）を胃腸内で形成する。 キレートが腸管から吸収されず、抗菌薬の血中濃度が80〜90%以上も激減。感染症が治らないばかりか、敗血症へと重症化して緊急入院となる。 マグミット、フェロミア、カルシウム剤、制酸剤との服用時間を最低2時間（できれば3〜4時間）ずらすか、他系統の抗菌薬（ペニシリン系・セフェム系）への変更を提案。 10.2 併用注意">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">8</span>
+            <h2 class="card-title">ニューキノロン／テトラサイクリン系 × マグミット・フェロミア（多価陽イオン）</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">他科受診・日常薬の盲点</span>
+            <span class="badge danger-high">危険度: 重篤</span>
+            <span class="badge badge-miss">見逃し度: ★★★★☆</span>
+            <span class="badge badge-sec">項: 10.2 併用注意</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>クラビット、ジェニナック、シプロキサン、ミノマイシン、ビブラマイシン、マグミット、フェロミア等</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">便秘で酸化マグネシウムを常用している高齢者や、貧血で鉄剤を飲んでいる女性が、感染症（気管支炎、膀胱炎、副鼻腔炎など）でキノロン系やミノマイシンを処方され、「朝食後」等で一緒にまとめて飲む。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">ニューキノロン系やテトラサイクリン系のケト基・カルボキシ基が、2価・3価の金属イオン（Mg2+, Al3+, Fe2+/Fe3+, Ca2+）と強力なキレート（不溶性錯体）を胃腸内で形成する。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>キレートが腸管から吸収されず、抗菌薬の血中濃度が80〜90%以上も激減。感染症が治らないばかりか、敗血症へと重症化して緊急入院となる。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">マグミット、フェロミア、カルシウム剤、制酸剤との服用時間を最低2時間（できれば3〜4時間）ずらすか、他系統の抗菌薬（ペニシリン系・セフェム系）への変更を提案。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>10.2 併用注意</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="他科受診・日常薬の盲点" data-text="チラージンS（レボチロキシン） × 鉄剤・カルシウム製剤・制酸剤 チラージンS、フェロミア、カルタン、マグミット、アルサルミン等 甲状腺機能低下症でチラージンSを長年服用している患者に、貧血で鉄剤（フェロミア）や骨粗鬆症でカルシウム製剤が追加。朝食後等で一緒に服用し続ける。 消化管内で金属イオンと吸着・キレートを形成し、レボチロキシンの吸収が著しく阻害される。 いくらチラージンを飲んでいてもTSHが上昇し続け、倦怠感・体重増加・浮腫・徐脈など甲状腺機能低下症の症状が再燃・悪化する。医師は薬が効かないと誤認して用量を過大に増量してしまうリスク。 チラージンSは起床時（空腹時）の単独服用が基本。鉄剤や多価陽イオン製剤とは少なくとも2時間以上（添付文書では数時間）あけて服用する。 10.2 併用注意">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">9</span>
+            <h2 class="card-title">チラージンS（レボチロキシン） × 鉄剤・カルシウム製剤・制酸剤</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">他科受診・日常薬の盲点</span>
+            <span class="badge danger-med">危険度: 警告</span>
+            <span class="badge badge-miss">見逃し度: ★★★★☆</span>
+            <span class="badge badge-sec">項: 10.2 併用注意</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>チラージンS、フェロミア、カルタン、マグミット、アルサルミン等</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">甲状腺機能低下症でチラージンSを長年服用している患者に、貧血で鉄剤（フェロミア）や骨粗鬆症でカルシウム製剤が追加。朝食後等で一緒に服用し続ける。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">消化管内で金属イオンと吸着・キレートを形成し、レボチロキシンの吸収が著しく阻害される。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>いくらチラージンを飲んでいてもTSHが上昇し続け、倦怠感・体重増加・浮腫・徐脈など甲状腺機能低下症の症状が再燃・悪化する。医師は薬が効かないと誤認して用量を過大に増量してしまうリスク。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">チラージンSは起床時（空腹時）の単独服用が基本。鉄剤や多価陽イオン製剤とは少なくとも2時間以上（添付文書では数時間）あけて服用する。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>10.2 併用注意</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="他科受診・日常薬の盲点" data-text="ジゴキシン（ジギタリス製剤） × ループ／サイアザイド利尿薬 ジゴシン、ハーフジゴキシン、ラシックス（フロセミド）、フルイトラン（トリクロルメチアジド） 心不全や心房細動でジゴキシンとフロセミドを併用している患者。脱水や利尿過多による電解質チェックを怠り漫然と投与が続く。 ジゴキシンは心筋細胞膜のNa+/K+-ATPaseのカリウム結合部位に結合して阻害する。利尿薬で血清カリウムが低下（低K血症）すると、競合相手のカリウムがいないためジゴキシンが受容体に過剰結合し、作用が異常に増強される。 重篤なジギタリス中毒（悪心・食欲不振・黄視症・房室ブロック・心室性期外収縮・致死的心室頻拍・心停止）を引き起こす。 利尿薬併用時は血清K値を定期測定し、低カリウム血症を絶対に放置しない。血中ジゴキシン濃度（TDM：目標0.5〜0.9 ng/mL）を厳格管理。 10.2 併用注意 / 8. 重要な基本的注意">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">10</span>
+            <h2 class="card-title">ジゴキシン（ジギタリス製剤） × ループ／サイアザイド利尿薬</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">他科受診・日常薬の盲点</span>
+            <span class="badge danger-fatal">危険度: 致死</span>
+            <span class="badge badge-miss">見逃し度: ★★★☆☆</span>
+            <span class="badge badge-sec">項: 10.2 併用注意 / 8. 重要な基本的注意</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>ジゴシン、ハーフジゴキシン、ラシックス（フロセミド）、フルイトラン（トリクロルメチアジド）</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">心不全や心房細動でジゴキシンとフロセミドを併用している患者。脱水や利尿過多による電解質チェックを怠り漫然と投与が続く。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">ジゴキシンは心筋細胞膜のNa+/K+-ATPaseのカリウム結合部位に結合して阻害する。利尿薬で血清カリウムが低下（低K血症）すると、競合相手のカリウムがいないためジゴキシンが受容体に過剰結合し、作用が異常に増強される。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>重篤なジギタリス中毒（悪心・食欲不振・黄視症・房室ブロック・心室性期外収縮・致死的心室頻拍・心停止）を引き起こす。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">利尿薬併用時は血清K値を定期測定し、低カリウム血症を絶対に放置しない。血中ジゴキシン濃度（TDM：目標0.5〜0.9 ng/mL）を厳格管理。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>10.2 併用注意 / 8. 重要な基本的注意</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="患者の服用習慣・誤認" data-text="メトトレキサート（リウマトレックス等）の「毎日服用誤認」 リウマトレックス、メトレート、メトトレキサート錠 関節リウマチで「週1回（または週2日連続）」のパルス服用ルールになっているMTXを、患者が「他の高血圧の薬と同じように毎朝1錠ずつ飲むもの」と思い込んで毎日連日服用してしまう。 MTXは細胞増殖に必要な葉酸代謝（ジヒドロ葉酸還元酵素）を阻害する。週1回の休薬期間があるからこそ骨髄や消化管粘膜の正常細胞が回復できる。連日投与すると正常な造血幹細胞のDNA合成が完全に停止する。 急性骨髄抑制（汎血球減少症）、重篤な口内炎・消化管潰瘍、重症感染症・敗血症に至り、死亡事故が毎年後を絶たない。厚労省・PMDAが幾度となく安全性速報（イエローレター）を発出。 「毎週○曜日に飲む薬」「絶対に毎日は飲まない」と指導箋・特製カレンダーで徹底指導。PTPシートの工夫や一包化時の曜日印字、ホリナート救援療法の常備。 警告 / 7. 用法及び用量に関連する注意">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">11</span>
+            <h2 class="card-title">メトトレキサート（リウマトレックス等）の「毎日服用誤認」</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">患者の服用習慣・誤認</span>
+            <span class="badge danger-fatal">危険度: 致死</span>
+            <span class="badge badge-miss">見逃し度: ★★★☆☆</span>
+            <span class="badge badge-sec">項: 警告 / 7. 用法及び用量に関連する注意</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>リウマトレックス、メトレート、メトトレキサート錠</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">関節リウマチで「週1回（または週2日連続）」のパルス服用ルールになっているMTXを、患者が「他の高血圧の薬と同じように毎朝1錠ずつ飲むもの」と思い込んで毎日連日服用してしまう。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">MTXは細胞増殖に必要な葉酸代謝（ジヒドロ葉酸還元酵素）を阻害する。週1回の休薬期間があるからこそ骨髄や消化管粘膜の正常細胞が回復できる。連日投与すると正常な造血幹細胞のDNA合成が完全に停止する。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>急性骨髄抑制（汎血球減少症）、重篤な口内炎・消化管潰瘍、重症感染症・敗血症に至り、死亡事故が毎年後を絶たない。厚労省・PMDAが幾度となく安全性速報（イエローレター）を発出。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">「毎週○曜日に飲む薬」「絶対に毎日は飲まない」と指導箋・特製カレンダーで徹底指導。PTPシートの工夫や一包化時の曜日印字、ホリナート救援療法の常備。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>警告 / 7. 用法及び用量に関連する注意</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="患者の服用習慣・誤認" data-text="経口ビスホスホネート薬（ボナロン・ベネット等） × 服用後横臥（二度寝） ボナロン、フォサマック、アクトネル、ベネット 朝起きてボナロンを飲んだあと、「まだ起きる時間じゃない」「体がだるい」と布団に潜り込んでそのまま二度寝してしまう。 ビスホスホネート化合物は食道粘膜に対して強烈な局所腐食性・細胞毒性を持つ。横になると重力による自然落下が起きず、食道狭窄部や逆流により食道粘膜に長時間直接付着する。 食道粘膜剥離、巨大食道潰瘍、食道狭窄、最悪の場合は食道穿孔（縦隔洞炎から敗血症死）を引き起こす。 起床時にコップ1杯（180mL以上）の水で服用し、服用後最低30分（できれば1時間）は絶対に横にならず座位・立位を保つことを厳守。 警告 / 7. 用法及び用量に関連する注意">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">12</span>
+            <h2 class="card-title">経口ビスホスホネート薬（ボナロン・ベネット等） × 服用後横臥（二度寝）</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">患者の服用習慣・誤認</span>
+            <span class="badge danger-high">危険度: 重篤</span>
+            <span class="badge badge-miss">見逃し度: ★★★☆☆</span>
+            <span class="badge badge-sec">項: 警告 / 7. 用法及び用量に関連する注意</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>ボナロン、フォサマック、アクトネル、ベネット</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">朝起きてボナロンを飲んだあと、「まだ起きる時間じゃない」「体がだるい」と布団に潜り込んでそのまま二度寝してしまう。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">ビスホスホネート化合物は食道粘膜に対して強烈な局所腐食性・細胞毒性を持つ。横になると重力による自然落下が起きず、食道狭窄部や逆流により食道粘膜に長時間直接付着する。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>食道粘膜剥離、巨大食道潰瘍、食道狭窄、最悪の場合は食道穿孔（縦隔洞炎から敗血症死）を引き起こす。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">起床時にコップ1杯（180mL以上）の水で服用し、服用後最低30分（できれば1時間）は絶対に横にならず座位・立位を保つことを厳守。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>警告 / 7. 用法及び用量に関連する注意</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="患者の服用習慣・誤認" data-text="痛風発作（急性関節炎）中の 尿酸降下薬（フェブリク等）新規開始・増量 フェブリク（フェブキソスタット）、ザイロリック（アロプリノール）、ユリス（ドチニュラド） 足の親指の付け根が激痛で腫れ上がり歩けない患者が来院。血清尿酸値が9.5 mg/dLだったため、医師が良かれと思ってその場ですぐにフェブリクを処方して飲ませてしまう。 血中尿酸値が急激に下がると、関節内に沈着していた尿酸ナトリウム結晶の表面が溶解し、結晶の小片が関節腔内に剥がれ落ちる（結晶の剥離現象）。これを好中球が異物として貪食し、炎症性サイトカインを大量放出する。 痛風発作がさらに激化・遷延化し、耐え難い激痛が数週間にわたって長引く。 発作中はまずNSAIDs（ナイキサン・ロキソニン大量短期）やコルヒチンで炎症を完全に鎮火させ、発作がおさまって2週間以上経ってから少量の尿酸降下薬を徐々に開始する。 7. 用法及び用量に関連する注意 / 8. 重要な基本的注意">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">13</span>
+            <h2 class="card-title">痛風発作（急性関節炎）中の 尿酸降下薬（フェブリク等）新規開始・増量</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">患者の服用習慣・誤認</span>
+            <span class="badge danger-med">危険度: 警告</span>
+            <span class="badge badge-miss">見逃し度: ★★★★☆</span>
+            <span class="badge badge-sec">項: 7. 用法及び用量に関連する注意 / 8. 重要な基本的注意</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>フェブリク（フェブキソスタット）、ザイロリック（アロプリノール）、ユリス（ドチニュラド）</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">足の親指の付け根が激痛で腫れ上がり歩けない患者が来院。血清尿酸値が9.5 mg/dLだったため、医師が良かれと思ってその場ですぐにフェブリクを処方して飲ませてしまう。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">血中尿酸値が急激に下がると、関節内に沈着していた尿酸ナトリウム結晶の表面が溶解し、結晶の小片が関節腔内に剥がれ落ちる（結晶の剥離現象）。これを好中球が異物として貪食し、炎症性サイトカインを大量放出する。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>痛風発作がさらに激化・遷延化し、耐え難い激痛が数週間にわたって長引く。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">発作中はまずNSAIDs（ナイキサン・ロキソニン大量短期）やコルヒチンで炎症を完全に鎮火させ、発作がおさまって2週間以上経ってから少量の尿酸降下薬を徐々に開始する。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>7. 用法及び用量に関連する注意 / 8. 重要な基本的注意</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="隠れた合併症・潜在リスク" data-text="気管支喘息患者 × 外用湿布薬・塗り薬（モーラステープ・ロキソニンテープ等） モーラステープ（ケトプロフェン）、ロキソニンテープ、ボルタレンゲル、サロンパス等 喘息の持病がある患者が、肩こりや腰痛で整形外科を受診し、「湿布なら飲み薬じゃないから安心」とモーラステープやロキソニンテープを処方され貼付する。 アスピリン喘息（成人喘息の約10%）はアレルギーではなくCOX-1阻害によって発症する。外用貼付剤であっても経皮吸収されて血中に移行し、気道のCOX-1を阻害。アラキドン酸代謝がリポキシゲナーゼ経路へ迂回してロイコトリエンが爆発的に産生される。 貼付後数分〜1時間で重篤な気管支痙攣と気道浮腫（アスピリン喘息大発作）が発生し、窒息・心肺停止に至る。添付文書【禁忌】。 喘息患者には「湿布薬・塗り薬・市販の鎮痛パップ剤もすべて禁忌」であることを警告。安全に使用できる鎮痛外用薬やアセトアミノフェン等を検討。 2. 禁忌">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">14</span>
+            <h2 class="card-title">気管支喘息患者 × 外用湿布薬・塗り薬（モーラステープ・ロキソニンテープ等）</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">隠れた合併症・潜在リスク</span>
+            <span class="badge danger-fatal">危険度: 致死</span>
+            <span class="badge badge-miss">見逃し度: ★★★★★</span>
+            <span class="badge badge-sec">項: 2. 禁忌</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>モーラステープ（ケトプロフェン）、ロキソニンテープ、ボルタレンゲル、サロンパス等</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">喘息の持病がある患者が、肩こりや腰痛で整形外科を受診し、「湿布なら飲み薬じゃないから安心」とモーラステープやロキソニンテープを処方され貼付する。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">アスピリン喘息（成人喘息の約10%）はアレルギーではなくCOX-1阻害によって発症する。外用貼付剤であっても経皮吸収されて血中に移行し、気道のCOX-1を阻害。アラキドン酸代謝がリポキシゲナーゼ経路へ迂回してロイコトリエンが爆発的に産生される。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>貼付後数分〜1時間で重篤な気管支痙攣と気道浮腫（アスピリン喘息大発作）が発生し、窒息・心肺停止に至る。添付文書【禁忌】。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">喘息患者には「湿布薬・塗り薬・市販の鎮痛パップ剤もすべて禁忌」であることを警告。安全に使用できる鎮痛外用薬やアセトアミノフェン等を検討。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>2. 禁忌</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="隠れた合併症・潜在リスク" data-text="骨粗鬆症薬（BP薬・ランマーク等） × 抜歯・インプラント等の歯科侵襲治療 ボナロン、ベネット、リクラスト、プラリア、ランマーク等 骨粗鬆症でBP薬や抗RANKL抗体を投与中の高齢者が、歯科を受診した際に医科の投薬を伝えず、そのまま抜歯や歯周外科治療を受ける。 骨吸収（破骨細胞）を強力に抑制するため、顎骨の骨リモデリング（新陳代謝）が停止する。抜歯等の創傷部に口腔内細菌が感染すると、骨の修復・治癒がまったく行われない。 顎の骨が露出し腐り落ちる「薬剤関連顎骨壊死（MRONJ/BRONJ）」を発症。激痛、排膿、骨融解が起き、難治性で治療が極めて困難になる。 骨粗鬆症治療の開始前に歯科受診を済ませるのが鉄則。投与中に抜歯が必要な場合は、日本骨代謝学会等のガイドラインに基づき医科歯科連携と適切な感染予防管理を実施。 8. 重要な基本的注意">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">15</span>
+            <h2 class="card-title">骨粗鬆症薬（BP薬・ランマーク等） × 抜歯・インプラント等の歯科侵襲治療</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">隠れた合併症・潜在リスク</span>
+            <span class="badge danger-high">危険度: 重篤</span>
+            <span class="badge badge-miss">見逃し度: ★★★★☆</span>
+            <span class="badge badge-sec">項: 8. 重要な基本的注意</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>ボナロン、ベネット、リクラスト、プラリア、ランマーク等</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">骨粗鬆症でBP薬や抗RANKL抗体を投与中の高齢者が、歯科を受診した際に医科の投薬を伝えず、そのまま抜歯や歯周外科治療を受ける。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">骨吸収（破骨細胞）を強力に抑制するため、顎骨の骨リモデリング（新陳代謝）が停止する。抜歯等の創傷部に口腔内細菌が感染すると、骨の修復・治癒がまったく行われない。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>顎の骨が露出し腐り落ちる「薬剤関連顎骨壊死（MRONJ/BRONJ）」を発症。激痛、排膿、骨融解が起き、難治性で治療が極めて困難になる。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">骨粗鬆症治療の開始前に歯科受診を済ませるのが鉄則。投与中に抜歯が必要な場合は、日本骨代謝学会等のガイドラインに基づき医科歯科連携と適切な感染予防管理を実施。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>8. 重要な基本的注意</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="隠れた合併症・潜在リスク" data-text="メトホルミン（メトグルコ等） × ヨード造影剤検査（CT・心カテ等） メトグルコ、ボグリボース/メトホルミン配合錠等 2型糖尿病でメトホルミンを飲んでいる患者が、精密検査（造影CT）や冠動脈造影（心カテ）を受ける際、メトホルミンの一時休薬指示が漏れて検査当日も服用してしまう。 ヨード造影剤投与後に一過性の造影剤誘発性急性腎障害（CIN）が起きると、主として腎排泄されるメトホルミンが体内に急激に蓄積。ミトコンドリアの電子伝達系を抑制し、嫌気性解糖が進んで乳酸が過剰蓄積する。 致死率約50%と言われる「乳酸アシドーシス」を発症。急激な全身倦怠感、悪心、過呼吸、意識障害、ショックから死に至る。 造影剤検査前（48時間前）から休薬し、検査後も48時間は腎機能を確認した上で再開するルール（メトホルミン休薬プロトコル）を徹底。 警告 / 8. 重要な基本的注意 / 10.2 併用注意">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">16</span>
+            <h2 class="card-title">メトホルミン（メトグルコ等） × ヨード造影剤検査（CT・心カテ等）</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">隠れた合併症・潜在リスク</span>
+            <span class="badge danger-fatal">危険度: 致死</span>
+            <span class="badge badge-miss">見逃し度: ★★★★☆</span>
+            <span class="badge badge-sec">項: 警告 / 8. 重要な基本的注意 / 10.2 併用注意</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>メトグルコ、ボグリボース/メトホルミン配合錠等</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">2型糖尿病でメトホルミンを飲んでいる患者が、精密検査（造影CT）や冠動脈造影（心カテ）を受ける際、メトホルミンの一時休薬指示が漏れて検査当日も服用してしまう。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">ヨード造影剤投与後に一過性の造影剤誘発性急性腎障害（CIN）が起きると、主として腎排泄されるメトホルミンが体内に急激に蓄積。ミトコンドリアの電子伝達系を抑制し、嫌気性解糖が進んで乳酸が過剰蓄積する。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>致死率約50%と言われる「乳酸アシドーシス」を発症。急激な全身倦怠感、悪心、過呼吸、意識障害、ショックから死に至る。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">造影剤検査前（48時間前）から休薬し、検査後も48時間は腎機能を確認した上で再開するルール（メトホルミン休薬プロトコル）を徹底。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>警告 / 8. 重要な基本的注意 / 10.2 併用注意</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="隠れた合併症・潜在リスク" data-text="パーキンソン病／レビー小体型認知症 × プリンペラン・ナウゼリン等（D2遮断薬） プリンペラン（メトクロプラミド）、ナウゼリン（ドンペリドン）、ドグマチール（スルピリド） パーキンソン病の患者が「吐き気がある」「胃の調子が悪い」と訴えたため、内科で定番のプリンペランやドグマチールが処方される。 パーキンソン病は脳内ドパミン不足の病態。プリンペランやスルピリドは中枢の血液脳関門（BBB）を通過し、線条体のドパミンD2受容体を強力に遮断する。 ドパミン作用が完全に断ち切られ、急激な筋強剛、振戦激化、歩行不能（すくみ足）、嚥下障害を起こし、悪性症候群や誤嚥性肺炎で寝たきりになる。 パーキンソン病患者の吐き気には、血液脳関門をほとんど通過しないドンペリドン（ナウゼリン）を慎重投与するか、抗コリン性の吐き気止めを考慮。プリンペラン・スルピリドは絶対禁忌。 2. 禁忌 / 9.1 合併症・既往歴等のある患者">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">17</span>
+            <h2 class="card-title">パーキンソン病／レビー小体型認知症 × プリンペラン・ナウゼリン等（D2遮断薬）</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">隠れた合併症・潜在リスク</span>
+            <span class="badge danger-high">危険度: 重篤</span>
+            <span class="badge badge-miss">見逃し度: ★★★★☆</span>
+            <span class="badge badge-sec">項: 2. 禁忌 / 9.1 合併症・既往歴等のある患者</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>プリンペラン（メトクロプラミド）、ナウゼリン（ドンペリドン）、ドグマチール（スルピリド）</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">パーキンソン病の患者が「吐き気がある」「胃の調子が悪い」と訴えたため、内科で定番のプリンペランやドグマチールが処方される。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">パーキンソン病は脳内ドパミン不足の病態。プリンペランやスルピリドは中枢の血液脳関門（BBB）を通過し、線条体のドパミンD2受容体を強力に遮断する。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>ドパミン作用が完全に断ち切られ、急激な筋強剛、振戦激化、歩行不能（すくみ足）、嚥下障害を起こし、悪性症候群や誤嚥性肺炎で寝たきりになる。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">パーキンソン病患者の吐き気には、血液脳関門をほとんど通過しないドンペリドン（ナウゼリン）を慎重投与するか、抗コリン性の吐き気止めを考慮。プリンペラン・スルピリドは絶対禁忌。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>2. 禁忌 / 9.1 合併症・既往歴等のある患者</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="隠れた合併症・潜在リスク" data-text="糖尿病患者 × β遮断薬（メインテート・アーチスト等）の低血糖マスク メインテート（ビソプロロール）、アーチスト（カルベジロール）、テノーミン等 インスリンやSU剤を使用中の糖尿病患者が高血圧・不整脈・心不全でβ遮断薬を開始。食事量が減った際、普段なら感じるはずの「手の震えや冷や汗、動悸」がないまま過ごしてしまう。 低血糖になると交感神経が興奮してアドレナリンが分泌され、頻脈・動悸・振戦を引き起こして本人に危険を知らせる（交感神経症状）。β遮断薬はこの受容体をブロックして動悸などの警告反応を完全に消し去る。さらに肝臓のグリコーゲン分解も抑制するため低血糖からの回復が遅れる。 患者が低血糖に気づけず警告症状なしで突然意識消失・昏睡（無自覚性低血糖）に陥り、不可逆的脳障害や交通事故を起こす。 β遮断薬併用患者には「動悸や手の震えが出ないことがある」と警告。「発汗（交感神経コリン作動性のためβ遮断薬でも消えない唯一のサイン）」や生あくび、強い脱力感があれば即座にブドウ糖を補給するよう指導。 8. 重要な基本的注意 / 9.1 合併症・既往歴等のある患者">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">18</span>
+            <h2 class="card-title">糖尿病患者 × β遮断薬（メインテート・アーチスト等）の低血糖マスク</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">隠れた合併症・潜在リスク</span>
+            <span class="badge danger-fatal">危険度: 致死</span>
+            <span class="badge badge-miss">見逃し度: ★★★☆☆</span>
+            <span class="badge badge-sec">項: 8. 重要な基本的注意 / 9.1 合併症・既往歴等のある患者</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>メインテート（ビソプロロール）、アーチスト（カルベジロール）、テノーミン等</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">インスリンやSU剤を使用中の糖尿病患者が高血圧・不整脈・心不全でβ遮断薬を開始。食事量が減った際、普段なら感じるはずの「手の震えや冷や汗、動悸」がないまま過ごしてしまう。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">低血糖になると交感神経が興奮してアドレナリンが分泌され、頻脈・動悸・振戦を引き起こして本人に危険を知らせる（交感神経症状）。β遮断薬はこの受容体をブロックして動悸などの警告反応を完全に消し去る。さらに肝臓のグリコーゲン分解も抑制するため低血糖からの回復が遅れる。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>患者が低血糖に気づけず警告症状なしで突然意識消失・昏睡（無自覚性低血糖）に陥り、不可逆的脳障害や交通事故を起こす。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">β遮断薬併用患者には「動悸や手の震えが出ないことがある」と警告。「発汗（交感神経コリン作動性のためβ遮断薬でも消えない唯一のサイン）」や生あくび、強い脱力感があれば即座にブドウ糖を補給するよう指導。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>8. 重要な基本的注意 / 9.1 合併症・既往歴等のある患者</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="隠れた合併症・潜在リスク" data-text="閉塞隅角緑内障・前立腺肥大症 × 抗コリン作用薬（アレルギー薬・胃薬・頻尿薬等） 抗ヒスタミン薬（ポララミン等）、抗うつ薬（トリプタノール等）、胃腸薬（ブスコパン等）、頻尿薬（ベシケア等） 前立腺肥大症のある高齢男性が蕁麻疹や花粉症で第一世代抗ヒスタミン薬を服用。あるいは閉塞隅角緑内障の既往がある患者に腹痛でブスコパンが投与される。 抗コリン作用により瞳孔括約筋が弛緩して散瞳し、隅角が狭窄・閉塞して房水流出がストップ。また膀胱平滑筋（排尿筋）を弛緩させ、内尿道括約筋を収縮させる。 眼圧が急上昇して「急性緑内障発作」を起こし激しい眼痛・頭痛・失明の危機に瀕する。また膀胱に尿がパンパンに溜まる「完全尿閉」を起こし導尿が必要となる。 「緑内障のタイプ（開放隅角か閉塞隅角か）」を必ず眼科に確認。前立腺肥大症患者には抗コリン作用のない第二世代抗ヒスタミン薬や抗コリンフリー薬剤を選択。 2. 禁忌">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">19</span>
+            <h2 class="card-title">閉塞隅角緑内障・前立腺肥大症 × 抗コリン作用薬（アレルギー薬・胃薬・頻尿薬等）</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">隠れた合併症・潜在リスク</span>
+            <span class="badge danger-high">危険度: 重篤</span>
+            <span class="badge badge-miss">見逃し度: ★★★☆☆</span>
+            <span class="badge badge-sec">項: 2. 禁忌</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>抗ヒスタミン薬（ポララミン等）、抗うつ薬（トリプタノール等）、胃腸薬（ブスコパン等）、頻尿薬（ベシケア等）</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">前立腺肥大症のある高齢男性が蕁麻疹や花粉症で第一世代抗ヒスタミン薬を服用。あるいは閉塞隅角緑内障の既往がある患者に腹痛でブスコパンが投与される。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">抗コリン作用により瞳孔括約筋が弛緩して散瞳し、隅角が狭窄・閉塞して房水流出がストップ。また膀胱平滑筋（排尿筋）を弛緩させ、内尿道括約筋を収縮させる。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>眼圧が急上昇して「急性緑内障発作」を起こし激しい眼痛・頭痛・失明の危機に瀕する。また膀胱に尿がパンパンに溜まる「完全尿閉」を起こし導尿が必要となる。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">「緑内障のタイプ（開放隅角か閉塞隅角か）」を必ず眼科に確認。前立腺肥大症患者には抗コリン作用のない第二世代抗ヒスタミン薬や抗コリンフリー薬剤を選択。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>2. 禁忌</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="多剤併用・代謝酵素の相互作用" data-text="トリプル・ワミー（Triple Whammy）：RAS阻害薬 ＋ 利尿薬 ＋ NSAIDs ARB/ACE阻害薬（オルメテック、アジルバ等） ＋ 利尿薬（ラシックス、フルイトラン等） ＋ NSAIDs（ロキソニン等） 高血圧と心不全でARBと利尿薬を併用している高齢者が、膝痛や腰痛で整形外科からロキソニンを漫然と処方されて毎日飲み続ける。 腎臓の糸球体内圧を保つバランスが3方向から同時に崩壊する。① 利尿薬が循環血漿量を減らし腎灌流圧を低下、② NSAIDsがプロスタグランジンを抑えて輸入細動脈をキュッと収縮（流入制限）、③ ARB/ACE阻害薬が輸出細動脈をダランと拡張（流出過多）。糸球体内圧が一瞬でゼロになる。 不可逆的な急性腎不全（AKI）を発症し、乏尿・高カリウム血症・肺水腫を起こして緊急人工透析に至る。 ARB/利尿薬を飲んでいる患者へのNSAIDs処方は最大危険サイン。アセトアミノフェンへの変更、あるいはNSAIDsの最短期間使用・腎機能厳格フォローを徹底。 10.2 併用注意">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">20</span>
+            <h2 class="card-title">トリプル・ワミー（Triple Whammy）：RAS阻害薬 ＋ 利尿薬 ＋ NSAIDs</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">多剤併用・代謝酵素の相互作用</span>
+            <span class="badge danger-fatal">危険度: 致死</span>
+            <span class="badge badge-miss">見逃し度: ★★★★★</span>
+            <span class="badge badge-sec">項: 10.2 併用注意</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>ARB/ACE阻害薬（オルメテック、アジルバ等） ＋ 利尿薬（ラシックス、フルイトラン等） ＋ NSAIDs（ロキソニン等）</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">高血圧と心不全でARBと利尿薬を併用している高齢者が、膝痛や腰痛で整形外科からロキソニンを漫然と処方されて毎日飲み続ける。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">腎臓の糸球体内圧を保つバランスが3方向から同時に崩壊する。① 利尿薬が循環血漿量を減らし腎灌流圧を低下、② NSAIDsがプロスタグランジンを抑えて輸入細動脈をキュッと収縮（流入制限）、③ ARB/ACE阻害薬が輸出細動脈をダランと拡張（流出過多）。糸球体内圧が一瞬でゼロになる。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>不可逆的な急性腎不全（AKI）を発症し、乏尿・高カリウム血症・肺水腫を起こして緊急人工透析に至る。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">ARB/利尿薬を飲んでいる患者へのNSAIDs処方は最大危険サイン。アセトアミノフェンへの変更、あるいはNSAIDsの最短期間使用・腎機能厳格フォローを徹底。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>10.2 併用注意</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="多剤併用・代謝酵素の相互作用" data-text="クラリスロマイシン（クラリス） × CYP3A4代謝スタチン（アトルバスタチン等） クラリス（クラリスロマイシン）、リピトール（アトルバスタチン）、リポバス（シンバスタチン） 脂質異常症でリピトールを常用している患者が、風邪や気管支炎、ヘリコバクター・ピロリ除菌等でクラリスを処方され併用する。 クラリスロマイシンは肝臓のチトクロームP450（CYP3A4）および排出トランスポーターOATP1B1を強力に非可逆的阻害（Mechanism-based inhibition）する。スタチンの代謝・排泄が止まり血中濃度が数倍〜十数倍に跳ね上がる。 骨格筋細胞が融解する「横紋筋融解症」を発症。全身の筋肉痛、脱力感、赤褐色尿（ミオグロビン尿）からミオグロビンが腎尿細管を閉塞し急性腎不全を引き起こす。 CYP3A4に依存しないスタチン（ロスバスタチン、ピタバスタチン、プラバスタチン）に変更するか、抗菌薬内服中はスタチンを一時休薬する。 10.2 併用注意">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">21</span>
+            <h2 class="card-title">クラリスロマイシン（クラリス） × CYP3A4代謝スタチン（アトルバスタチン等）</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">多剤併用・代謝酵素の相互作用</span>
+            <span class="badge danger-high">危険度: 重篤</span>
+            <span class="badge badge-miss">見逃し度: ★★★★☆</span>
+            <span class="badge badge-sec">項: 10.2 併用注意</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>クラリス（クラリスロマイシン）、リピトール（アトルバスタチン）、リポバス（シンバスタチン）</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">脂質異常症でリピトールを常用している患者が、風邪や気管支炎、ヘリコバクター・ピロリ除菌等でクラリスを処方され併用する。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">クラリスロマイシンは肝臓のチトクロームP450（CYP3A4）および排出トランスポーターOATP1B1を強力に非可逆的阻害（Mechanism-based inhibition）する。スタチンの代謝・排泄が止まり血中濃度が数倍〜十数倍に跳ね上がる。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>骨格筋細胞が融解する「横紋筋融解症」を発症。全身の筋肉痛、脱力感、赤褐色尿（ミオグロビン尿）からミオグロビンが腎尿細管を閉塞し急性腎不全を引き起こす。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">CYP3A4に依存しないスタチン（ロスバスタチン、ピタバスタチン、プラバスタチン）に変更するか、抗菌薬内服中はスタチンを一時休薬する。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>10.2 併用注意</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="多剤併用・代謝酵素の相互作用" data-text="ニューキノロン系抗菌薬（クラビット等） × NSAIDs（フェンブフェン・ロキソニン等） クラビット、シプロキサン、バクシダール、フェンブフェン（併用禁忌）、ロキソプロフェン 発熱と激しい咽頭痛・関節痛を伴う感染症患者に対し、キノロン系抗菌薬と解熱鎮痛目的のNSAIDsが同時に処方される。 中枢神経系において、抑制性神経伝達物質GABAがGABA受容体に結合して神経の過剰興奮を抑えている。ニューキノロン単独でもわずかにGABA受容体を阻害するが、NSAIDsが共存すると相乗的に受容体結合阻害が数倍〜数十倍に強化される。 中枢神経の抑制が完全に外れ、突然の全身性痙攣発作（てんかん様大発作）を誘発する。特にフェンブフェン等との併用は添付文書【禁忌】。 キノロン系抗菌薬服用中の発熱・疼痛にはアセトアミノフェンを第一選択とする。キノロン×NSAIDs処方には必ず疑義照会。 2. 禁忌 / 10.2 併用注意">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">22</span>
+            <h2 class="card-title">ニューキノロン系抗菌薬（クラビット等） × NSAIDs（フェンブフェン・ロキソニン等）</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">多剤併用・代謝酵素の相互作用</span>
+            <span class="badge danger-high">危険度: 重篤</span>
+            <span class="badge badge-miss">見逃し度: ★★★★☆</span>
+            <span class="badge badge-sec">項: 2. 禁忌 / 10.2 併用注意</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>クラビット、シプロキサン、バクシダール、フェンブフェン（併用禁忌）、ロキソプロフェン</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">発熱と激しい咽頭痛・関節痛を伴う感染症患者に対し、キノロン系抗菌薬と解熱鎮痛目的のNSAIDsが同時に処方される。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">中枢神経系において、抑制性神経伝達物質GABAがGABA受容体に結合して神経の過剰興奮を抑えている。ニューキノロン単独でもわずかにGABA受容体を阻害するが、NSAIDsが共存すると相乗的に受容体結合阻害が数倍〜数十倍に強化される。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>中枢神経の抑制が完全に外れ、突然の全身性痙攣発作（てんかん様大発作）を誘発する。特にフェンブフェン等との併用は添付文書【禁忌】。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">キノロン系抗菌薬服用中の発熱・疼痛にはアセトアミノフェンを第一選択とする。キノロン×NSAIDs処方には必ず疑義照会。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>2. 禁忌 / 10.2 併用注意</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+      <article class="trap-card" data-category="多剤併用・代謝酵素の相互作用" data-text="高齢者への ベンゾジアゼピン系睡眠薬・抗不安薬 ハルシオン、デパス、マイスリー、レンドルミン、リスミー等 不眠を訴える高齢者にベンゾ系睡眠薬が気軽に処方される。夜中に目が覚めて混乱したり歩き回るため、「効いていない」と判断されてさらに増量される。 高齢者は薬物代謝・排泄能が低下している上、中枢神経の感受性が変化している。中枢抑制薬に対して脱抑制が起きる「逆説的興奮（せん妄）」が発生。さらに骨格筋の筋弛緩作用と翌朝への持ち越しで平衡感覚が失われる。 夜間トイレ歩行時に転倒し「大腿骨頸部骨折」を受傷。手術・長期臥床から寝たきり、認知症の急激な進行、誤嚥性肺炎で1年以内に死亡する高齢者医療最大の破滅パターン。 高齢者の不眠にはオレキシン受容体拮抗薬（デエビゴ、ベルソムラ）やメラトニン受容体作動薬（ロゼレム）を第一選択とし、ベンゾ系・Z薬は極力処方しない（多剤投与・高用量処方は保険減算対象）。 8. 重要な基本的注意 / 9.8 高齢者への投与">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="trap-id">23</span>
+            <h2 class="card-title">高齢者への ベンゾジアゼピン系睡眠薬・抗不安薬</h2>
+          </div>
+          <div class="card-badges">
+            <span class="badge badge-cat">多剤併用・代謝酵素の相互作用</span>
+            <span class="badge danger-high">危険度: 重篤</span>
+            <span class="badge badge-miss">見逃し度: ★★★☆☆</span>
+            <span class="badge badge-sec">項: 8. 重要な基本的注意 / 9.8 高齢者への投与</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="section-block">
+            <div class="section-title sec-drugs">💊 該当・関連薬剤</div>
+            <div class="section-content"><strong>ハルシオン、デパス、マイスリー、レンドルミン、リスミー等</strong></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title sec-scenario">⚡ 臨床現場で起きる罠（典型シナリオ）</div>
+            <div class="section-content">不眠を訴える高齢者にベンゾ系睡眠薬が気軽に処方される。夜中に目が覚めて混乱したり歩き回るため、「効いていない」と判断されてさらに増量される。</div>
+          </div>
+
+          <div class="section-block" style="grid-column: span 2;">
+            <div class="section-title sec-mechanism">🔬 なぜ起きるのか（薬理・生理学的機序）</div>
+            <div class="section-content">高齢者は薬物代謝・排泄能が低下している上、中枢神経の感受性が変化している。中枢抑制薬に対して脱抑制が起きる「逆説的興奮（せん妄）」が発生。さらに骨格筋の筋弛緩作用と翌朝への持ち越しで平衡感覚が失われる。</div>
+          </div>
+
+          <div class="consequence-box">
+            <div class="section-title sec-consequence">💀 恐ろしい結末（放置した場合の帰結）</div>
+            <div class="section-content"><strong>夜間トイレ歩行時に転倒し「大腿骨頸部骨折」を受傷。手術・長期臥床から寝たきり、認知症の急激な進行、誤嚥性肺炎で1年以内に死亡する高齢者医療最大の破滅パターン。</strong></div>
+          </div>
+
+          <div class="defense-box">
+            <div class="section-title sec-defense">🛡️ 現場の防衛策・鑑査ポイント</div>
+            <div class="section-content">高齢者の不眠にはオレキシン受容体拮抗薬（デエビゴ、ベルソムラ）やメラトニン受容体作動薬（ロゼレム）を第一選択とし、ベンゾ系・Z薬は極力処方しない（多剤投与・高用量処方は保険減算対象）。</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span>添付文書記載区分: <strong>8. 重要な基本的注意 / 9.8 高齢者への投与</strong></span>
+          <span>医薬品840品目添付文書データベース照合済</span>
+        </div>
+      </article>
+
+    </div>
+  </main>
+
+  <script>
+    const searchInput = document.getElementById('searchInput');
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const cards = document.querySelectorAll('.trap-card');
+    const visibleCount = document.getElementById('visibleCount');
+
+    let currentCat = 'all';
+
+    function filterTraps() {
+      const q = searchInput.value.toLowerCase().trim();
+      let count = 0;
+
+      cards.forEach(card => {
+        const cat = card.getAttribute('data-category');
+        const text = card.getAttribute('data-text').toLowerCase();
+
+        const matchCat = (currentCat === 'all' || cat === currentCat);
+        const matchText = (!q || text.includes(q));
+
+        if (matchCat && matchText) {
+          card.style.display = 'block';
+          count++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      visibleCount.textContent = count;
+    }
+
+    searchInput.addEventListener('input', filterTraps);
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentCat = btn.getAttribute('data-cat');
+        filterTraps();
+      });
+    });
+  </script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log('[PWA] ServiceWorker registered:', reg.scope))
+      .catch(err => console.log('[PWA] ServiceWorker registration failed:', err));
+  });
+}
+</script>
+
+</body>
+</html>

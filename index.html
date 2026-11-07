@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0284c7">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="医薬品890">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>医薬品890品目 添付文書実務パッケージ - ログイン認証</title>
+  <style>
+    :root {
+      --primary-color: #0284c7;
+      --primary-dark: #0369a1;
+      --text-dark: #0f172a;
+      --bg-slate: #0f172a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0c4a6e 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .login-card {
+      background: rgba(30, 41, 59, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      padding: 36px 28px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      text-align: center;
+    }
+    .app-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+    }
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 8px;
+    }
+    .input-wrapper {
+      position: relative;
+    }
+    input[type="password"], input[type="text"] {
+      width: 100%;
+      height: 48px;
+      padding: 0 42px 0 14px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #475569;
+      background: #1e293b;
+      color: #fff;
+      outline: none;
+      transition: all 0.2s;
+    }
+    input:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+    .toggle-pass-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .login-btn {
+      width: 100%;
+      height: 48px;
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+      transition: all 0.2s;
+    }
+    .login-btn:hover {
+      background: linear-gradient(135deg, #0369a1, #075985);
+      transform: translateY(-1px);
+    }
+    .login-btn:active {
+      transform: translateY(1px);
+    }
+    .error-msg {
+      display: none;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      font-size: 13px;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+    .footer-note {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 24px;
+      line-height: 1.5;
+    }
+    .quick-numpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .num-btn {
+      height: 42px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      color: #e2e8f0;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .num-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .num-btn:active {
+      background: rgba(255, 255, 255, 0.25);
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-card">
+  <img src="icon-192.png" alt="App Icon" class="app-icon">
+  <h1>医薬品890品目 添付文書実務パッケージ</h1>
+  <p class="subtitle">関係者限定システム・パスワード認証</p>
+
+  <div id="errorMsg" class="error-msg">
+    ⚠️ パスワードが正しくありません
+  </div>
+
+  <form id="loginForm" onsubmit="handleLogin(event)">
+    <div class="form-group">
+      <label for="passwordInput">🔒 パスワードを入力してください</label>
+      <div class="input-wrapper">
+        <input type="password" id="passwordInput" placeholder="パスワードを入力" autocomplete="current-password" autofocus required>
+        <button type="button" class="toggle-pass-btn" onclick="togglePassVisibility()" title="パスワードを表示">👁️</button>
+      </div>
+    </div>
+
+    <button type="submit" class="login-btn">ログインして開く</button>
+
+    <!-- テンキー入力パッド（スマホ等で片手で入力しやすい補助機能） -->
+    <div class="quick-numpad">
+      <button type="button" class="num-btn" onclick="appendNum('1')">1</button>
+      <button type="button" class="num-btn" onclick="appendNum('2')">2</button>
+      <button type="button" class="num-btn" onclick="appendNum('3')">3</button>
+      <button type="button" class="num-btn" onclick="appendNum('4')">4</button>
+      <button type="button" class="num-btn" onclick="appendNum('5')">5</button>
+      <button type="button" class="num-btn" onclick="appendNum('6')">6</button>
+      <button type="button" class="num-btn" onclick="appendNum('7')">7</button>
+      <button type="button" class="num-btn" onclick="appendNum('8')">8</button>
+      <button type="button" class="num-btn" onclick="appendNum('9')">9</button>
+      <button type="button" class="num-btn" onclick="clearNum()">C</button>
+      <button type="button" class="num-btn" onclick="appendNum('0')">0</button>
+      <button type="button" class="num-btn" onclick="backspaceNum()">⌫</button>
+    </div>
+  </form>
+
+  <div class="footer-note">
+    ※一度ログインするとブラウザを閉じるまで認証状態が保持されます。<br>
+    調剤薬局実務・保険請求審査査定防止プロジェクト
+  </div>
+</div>
+
+<script src="auth-guard.js"></script>
+<script>
+const TARGET_HASH = "6a0170bd1bd0260cb3923a0b9a8c8a29b5191a911b08a9dac679cd3bbd80a554";
+const AUTH_KEY = "pharma_auth_token_890";
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const input = document.getElementById('passwordInput');
+  const errorMsg = document.getElementById('errorMsg');
+  const val = input.value.trim();
+
+  const hashed = await sha256(val);
+  if (hashed === TARGET_HASH) {
+    // 認証成功：セッションストレージにハッシュを保存
+    sessionStorage.setItem(AUTH_KEY, hashed);
+    errorMsg.style.display = 'none';
+    // メインビューアへ遷移
+    window.location.replace('添付文書検索ビューア.html');
+  } else {
+    // 認証失敗
+    errorMsg.style.display = 'block';
+    input.value = '';
+    input.focus();
+  }
+}
+
+function togglePassVisibility() {
+  const input = document.getElementById('passwordInput');
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function appendNum(num) {
+  const input = document.getElementById('passwordInput');
+  input.value += num;
+}
+
+function clearNum() {
+  const input = document.getElementById('passwordInput');
+  input.value = '';
+}
+
+function backspaceNum() {
+  const input = document.getElementById('passwordInput');
+  input.value = input.value.slice(0, -1);
+}
+</script>
+
+</body>
+</html>
