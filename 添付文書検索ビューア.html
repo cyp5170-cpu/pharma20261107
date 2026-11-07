@@ -2542,6 +2542,12 @@
             <div id="modalSectionsContainer"></div>
           </div>
           <div id="tabPdfContent" class="tab-content">
+            <div style="padding: 10px 14px; background: #e0f2fe; border-bottom: 1px solid #bae6fd; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+              <span style="font-size: 0.85rem; color: #0369a1; font-weight: 600;">📄 厚生労働省・PMDA最新原本 ＆ ローカル原本</span>
+              <a id="modalPmdaLink" href="#" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; background: #0284c7; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 0.82rem; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+                🌐 PMDA公式原本を開く
+              </a>
+            </div>
             <iframe id="modalPdfFrame" class="pdf-frame" src=""></iframe>
           </div>
         </main>
@@ -2665,9 +2671,14 @@
       applyFilter();
     }
 
-    function getPdfUrl(pdfFilename) {
-      if (!pdfFilename) return '';
-      return 'PDF/' + encodeURIComponent(pdfFilename);
+    function getPdfUrl(pdfFilename, drugName = '') {
+      const isLocal = (location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+      if (isLocal && pdfFilename) {
+        return 'PDF/' + encodeURIComponent(pdfFilename);
+      }
+      // Web環境（GitHub Pages等）またはローカルで見つからない場合：PMDA公式検索
+      const q = drugName || (pdfFilename ? pdfFilename.replace(/\.pdf$/i, '') : '');
+      return 'https://www.google.com/search?q=' + encodeURIComponent(q + ' 添付文書 PMDA');
     }
 
     function highlightText(text, query) {
@@ -2798,7 +2809,7 @@
             </td>
             <td>${previewHtml}</td>
             <td style="text-align: center;">
-              <a href="${getPdfUrl(item.pdf)}" target="_blank" class="pdf-link-btn" title="別タブでPDFを開く">
+              <a href="${getPdfUrl(item.pdf, item.n)}" target="_blank" class="pdf-link-btn" title="添付文書原本（ローカル/PMDA公式）を開く">
                 📄 開く
               </a>
             </td>
@@ -2818,9 +2829,18 @@
       modalYakko.textContent = `薬効: ${drug.y || '-'}`;
       modalYj.textContent = `YJコード: ${drug.yj || '-'}`;
 
-      // PDFのセット
-      const pdfUrl = getPdfUrl(drug.pdf);
-      modalPdfFrame.src = pdfUrl;
+      // PDF & PMDAリンクのセット
+      const isLocal = (location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+      const pmdaSearchUrl = 'https://www.google.com/search?q=' + encodeURIComponent(drug.n + ' 添付文書 PMDA');
+      const pmdaBtn = document.getElementById('modalPmdaLink');
+      if (pmdaBtn) {
+        pmdaBtn.href = pmdaSearchUrl;
+      }
+      if (isLocal && drug.pdf) {
+        modalPdfFrame.src = 'PDF/' + encodeURIComponent(drug.pdf);
+      } else {
+        modalPdfFrame.src = pmdaSearchUrl;
+      }
 
       // 存在する項目のマッピング作成
       const existingSecMap = {};
